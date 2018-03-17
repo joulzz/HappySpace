@@ -25,7 +25,7 @@ class Tracker:
         self.good_new_features = features_new[st==1]
         self.good_old_features = self.features1[st==1]
 
-        self.features1 = features_new
+        self.features1 = cv2.goodFeaturesToTrack(self.gray_frame, mask = None, **self.feature_params)
         self.gray_frame = current_gray
 
 

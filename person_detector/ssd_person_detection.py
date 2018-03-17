@@ -20,7 +20,7 @@ class PersonDetector:
 
     def detect_person(self, frame):
         self.person_bounding_boxes= []
-        blob = cv2.dnn.blobFromImage(frame, 1./255, (416, 416), (), True, False)
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (300, 300), 127.5, True, False)
         self.net.setInput(blob)
         self.detections = self.net.forward()
 
@@ -36,7 +36,7 @@ class PersonDetector:
                 xRightTop = int(self.detections[0, 0, i, 5] * cols)
                 yRightTop = int(self.detections[0, 0, i, 6] * rows)
                 if class_id == 1:
-                    self.person_bounding_boxes.append(((xLeftBottom, yLeftBottom), (xRightTop, yRightTop)))
+                    self.person_bounding_boxes.append(((xLeftBottom, yRightTop), (xRightTop, yLeftBottom)))
                     # cv2.rectangle(frame, , , (255, 0, 0), 2)
                     # cv2.imshow('frame', frame)
                     # cv2.waitKey(10)

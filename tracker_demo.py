@@ -18,6 +18,7 @@ if __name__ == "__main__":
         for bbox in detected_bboxes:
             cv2.rectangle(draw_frame, bbox[0], bbox[1], (255, 0, 0), 2)
         if len(detected_bboxes) == 0:
+            tracking_set = True
             cv2.imshow('frame', frame)
             cv2.waitKey(10)
             continue
@@ -25,10 +26,12 @@ if __name__ == "__main__":
         new_bboxes = []
         if tracking_set:
             tracker.initialize_tracker(frame)
-            tracking_set = False 
+            tracking_set = False
             continue
         else:
             tracker.run_tracker(frame)
+
+
 
         # for bbox in detected_bboxes:
         for i, (new, old) in enumerate(zip(tracker.good_new_features, tracker.good_old_features)):
