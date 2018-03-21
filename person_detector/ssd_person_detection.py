@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class PersonDetector:
     def __init__(self, model_binary, model_config, model_type):
         self.model_binary = model_binary
@@ -12,11 +13,9 @@ class PersonDetector:
             model_loader = getattr(self, "load_{0}_model".format(model_type))
             model_loader()
 
-
     def load_ssd_model(self):
         print "Loaded DNN model"
         self.net = cv2.dnn.readNetFromTensorflow(self.model_binary, self.model_config)
-
 
     def detect_person(self, frame):
         self.person_bounding_boxes= []
@@ -37,13 +36,22 @@ class PersonDetector:
                 yRightTop = int(self.detections[0, 0, i, 6] * rows)
                 if class_id == 1:
                     self.person_bounding_boxes.append(((xLeftBottom, yRightTop), (xRightTop, yLeftBottom)))
+
+        for person in self.person_bounding_boxes:
+            for person2 in self.person_bounding_boxes:
+                if person == person2:
+                    continue
+                center = (person2[0][0] + person2[1][0])/2, (person2[0][1] + person2[1][1])/2
+
+                if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[1][1] and center[1] < person[0][1]:
+                    self.person_bounding_boxes.remove(person2)
                     # cv2.rectangle(frame, , , (255, 0, 0), 2)
                     # cv2.imshow('frame', frame)
                     # cv2.waitKey(10)
 
 
 if __name__ == "__main__":
-    persondetect = PersonDetector("/home/suraj/Repositories/YoloSockets/deploy/models/ssd/ssd.pb", "/home/suraj/Repositories/YoloSockets/deploy/models/ssd/ssd.pbtxt", "ssd")
+    persondetect = PersonDetector("../Models/ssd/ssd.pb", "../Models/ssd/ssd.pbtxt", "ssd")
     cap = cv2.VideoCapture(0)
     i =0
     while True:
