@@ -49,6 +49,7 @@ def main():
             if person.current:
                 cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 0, 0), 2)
                 cv2.putText(draw_frame, "Person ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
+                cv2.putText(draw_frame, "Smiles Count: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
 
         print state
         print bboxes
@@ -67,7 +68,6 @@ def main():
                     if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[0][1] and center[1] <= current_bbox[1][1]:
                         person.bbox = current_bbox
                         person.current = True
-                        person.count += 1
                         people_tracker.current_frame_bboxes.remove(current_bbox)
 
         max_idx = len(person_counter.people)
@@ -78,6 +78,14 @@ def main():
             new_person.current = True
             new_person.id = max_idx
             person_counter.add(new_person)
+
+
+        for people in person_counter.people:
+            if people.current:
+                bbox = people.bbox
+                smile_detector.preprocess_image(current_frame[bbox[0][1]: bbox[1][1], bbox[0][0]: bbox[1][0]])
+                if smile_detector.predict():
+                    people.count += 1
 
         # print people_tracker.previous_frame_bboxes
         # print people_tracker.current_frame_bboxes

@@ -72,7 +72,6 @@ def main():
                 for current_bbox in people_tracker.current_frame_bboxes:
                     if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[1][1] and center[1] <= current_bbox[0][1]:
                         person.bbox = current_bbox
-                        person.count += 1
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(current_bbox)
 
@@ -84,10 +83,16 @@ def main():
         for bbox in people_tracker.current_frame_bboxes:
             new_person = People()
             new_person.bbox = bbox
-            new_person.count = 0
             new_person.current = True
             new_person.id = max_idx
             person_counter.add(new_person)
+
+        for people in person_counter.people:
+            if people.current:
+                bbox = people.bbox
+                current_frame[bbox[1][1]: bbox[0][1], bbox[0][0]: bbox[1][0]])
+                if smile_detector.predict():
+                    people.count += 1
 
         # print people_tracker.previous_frame_bboxes
         # print people_tracker.current_frame_bboxes
