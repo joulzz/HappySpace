@@ -1,12 +1,12 @@
 from em_model import EMR
 import cv2
 import numpy as np
-
+from sklearn.externals import joblib
 class SmileDetector:
     def __init__(self):
         self.network = EMR("Models/sentiment_net/sentiment_net")
         self.network.build_network()
-
+        self.final_layer = joblib.load("Models/svm_model.pkl")
 
     def preprocess_image(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -14,16 +14,8 @@ class SmileDetector:
 
     def predict(self):
         result = self.network.predict(self.image)
-        if result is not None:
-            if result[0][6] < 0.6:
-                result[0][6] = result[0][6] - 0.12
-                result[0][:3] += 0.01
-                result[0][4:5] += 0.04
-            maxindex = np.argmax(result[0])
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            if maxindex == 3:
-                return True
-            else:
-                return False
-        else:
+        output = self.final_layer.predict(result)
+        if output:
             return False
+        else:
+            return True
