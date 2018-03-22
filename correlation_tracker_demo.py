@@ -1,5 +1,5 @@
 from person_detector.ssd_person_detection import PersonDetector
-from tracking.camshift_tracker import Tracker
+from tracking.correlation_tracker import Tracker
 import cv2
 import numpy as np
 from face_detector.face_detector import FaceDetection
@@ -31,9 +31,9 @@ def main():
         draw_frame = np.copy(frame)
 
         # Initialize person detection
-        # face_detector.run_facedetector(current_frame)
-        persondetect.detect_person(current_frame)
-        people_tracker.current_frame_bboxes = persondetect.person_bounding_boxes
+        face_detector.run_facedetector(current_frame)
+        # persondetect.detect_person(current_frame)
+        people_tracker.current_frame_bboxes = face_detector.faces
 
         # for faces in people_tracker.current_frame_bboxes:
         #     cv2.rectangle(draw_frame, faces[0], faces[1], (0, 0, 255), 2)
@@ -60,25 +60,15 @@ def main():
                 tracker.tracker_run(current_frame)
                 tracked_bbox = tracker.tracked_bbox
 
-
-                print "Tracked bbox: " + str(tracked_bbox)
-                if len(tracked_bbox) == 0:
-                    continue
                 cv2.rectangle(draw_frame, tracked_bbox[0], tracked_bbox[1], (0, 255, 0), 2)
-
-
                 center = (tracked_bbox[0][0] + tracked_bbox[1][0]) / 2, (tracked_bbox[0][1] + tracked_bbox[1][1]) / 2
 
                 for current_bbox in people_tracker.current_frame_bboxes:
-                    if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[1][1] and center[1] <= current_bbox[0][1]:
+                    if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[0][1] and center[1] <= current_bbox[1][1]:
                         person.bbox = current_bbox
-                        person.count += 1
                         person.current = True
+                        person.count += 1
                         people_tracker.current_frame_bboxes.remove(current_bbox)
-
-
-                    else:
-                        person.current = False
 
         max_idx = len(person_counter.people)
         for bbox in people_tracker.current_frame_bboxes:
