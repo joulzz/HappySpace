@@ -42,9 +42,18 @@ class PersonDetector:
                 if person == person2:
                     continue
                 center = (person2[0][0] + person2[1][0])/2, (person2[0][1] + person2[1][1])/2
+                area1 = (person[1][0] - person[0][0]) * (person[0][1] - person[1][1])
+                area2 = (person2[1][0] - person2[0][0]) * (person2[0][1] - person2[1][1])
+
+
 
                 if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[1][1] and center[1] < person[0][1]:
-                    self.person_bounding_boxes.remove(person2)
+                    if area1 > area2:
+                        self.person_bounding_boxes.remove(person2)
+                    elif area2 > area1:
+                        self.person_bounding_boxes.remove(person)
+                    else:
+                        self.person_bounding_boxes.remove(person)
                     # cv2.rectangle(frame, , , (255, 0, 0), 2)
                     # cv2.imshow('frame', frame)
                     # cv2.waitKey(10)

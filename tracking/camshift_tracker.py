@@ -25,6 +25,7 @@ class Tracker:
         self.hist = hist.reshape(-1)
 
     def tracker_run(self, frame):
+        self.tracked_bbox = []
         self.get_frame(frame)
         prob = cv2.calcBackProject([self.hsv], [0], self.hist, [0, 180], 1)
         prob &= self.mask
@@ -37,12 +38,14 @@ class Tracker:
             x_points.append(rect[0])
             y_points.append(rect[1])
 
-        if len(x_points) != 0 and len(y_points)!= 0:
+        if len(x_points) != 0 and len(y_points) != 0:
             x0 = min(x_points)
             y0 = max(y_points)
             x1 = max(x_points)
             y1 = min(y_points)
-
             self.tracked_bbox = ((x0, y0), (x1, y1))
+
+            if x0 == 0 and x1 == 0 and y0 == 0 and y1 == 0:
+                self.tracked_bbox = []
         else:
             self.tracked_bbox = []

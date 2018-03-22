@@ -3,6 +3,7 @@ class PeopleTracker:
         self.total_detected_bboxes = []
         self.previous_frame_bboxes = []
         self.current_frame_bboxes = []
+        self.replaced_indices = []
 
     def add_to_total(self, person):
         self.total_detected_bboxes.append(person)
@@ -23,6 +24,7 @@ class PeopleTracker:
         for i, person in enumerate(self.previous_frame_bboxes):
             if old_person == person:
                 self.previous_frame_bboxes[i] = new_person
+                self.replaced_indices.append(i)
 
     def replace_total_detected(self, old_person, new_person):
         for i, person in enumerate(self.total_detected_bboxes):
@@ -34,17 +36,17 @@ class PeopleTracker:
 #
 class PeopleCounter:
     def __init__(self):
-        self.people_features = []
+        self.people = []
 
     def add(self, people_features):
-        self.people_features.append(people_features)
+        self.people.append(people_features)
 
     def remove(self, people_features):
-        for people in self.people_features:
+        for people in self.people:
             if people.id == people_features.id:
                 people.bbox = []
 
-class PeopleFeatures:
+class People:
     def __init__(self):
         self.id = 0
         self.current = False
