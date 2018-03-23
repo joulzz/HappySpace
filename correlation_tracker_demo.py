@@ -6,6 +6,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from smile_counter.smile_counter import SmileCounter
 from sentiment_net.sentiment_net import SmileDetector
+import pandas as pd
 
 def main():
     persondetect = PersonDetector("Models/ssd/ssd.pb", "Models/ssd/ssd.pbtxt", "ssd")
@@ -18,7 +19,7 @@ def main():
     tracker = Tracker()
     previous_frame = []
     current_frame = None
-
+    frame_count = 0
     while True:
         _, frame = cap.read()
 
@@ -86,6 +87,23 @@ def main():
                 smile_detector.preprocess_image(current_frame[bbox[0][1]: bbox[1][1], bbox[0][0]: bbox[1][0]])
                 if smile_detector.predict():
                     people.count += 1
+
+
+        if frame_count % 100 == 0:
+        	df = pd.DataFrame()
+        	ids = []
+        	smile_count = []
+        	last_bbox = []
+
+        	for people in person_counter.people:
+        		ids.append(people.id)
+        		smile_count.append(people.count)
+        		last_bbox.append(people.bbox)
+        	df["ID"] = ids
+        	df["Smiles_Detected"] = smile_count
+        	df["Last_Location"] = last_bbox
+
+        	df.to_csv("output.csv", index=False)
 
         # print people_tracker.previous_frame_bboxes
         # print people_tracker.current_frame_bboxes
