@@ -6,6 +6,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from smile_counter.smile_counter import SmileCounter
 from sentiment_net.sentiment_net import SmileDetector
+import pandas as pd
 
 def main():
     persondetect = PersonDetector("Models/ssd/ssd.pb", "Models/ssd/ssd.pbtxt", "ssd")
@@ -18,7 +19,7 @@ def main():
     tracker = Tracker()
     previous_frame = []
     current_frame = None
-
+    frame_count = 0
     while True:
         _, frame = cap.read()
 
@@ -85,16 +86,37 @@ def main():
             new_person.id = max_idx
             person_counter.add(new_person)
 
-        for people in person_counter.people:
-            if people.current:
-                bbox = people.bbox
-                face_subsection = current_frame[bbox[1][1]: bbox[0][1], bbox[0][0]: bbox[1][0]]
-                face_detector.run_facedetector(face_subsection)
-                faces = face_detector.faces
-                for face in  faces:
-                    smile_detector.preprocess_image(face_subsection[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                    if smile_detector.predict():
-                        people.count += 1
+
+        if frame_count % 10 == 0:
+            for people in person_counter.people:
+                if people.current:
+                    bbox = people.bbox
+                    face_subsection = current_frame[bbox[1][1]: bbox[0][1], bbox[0][0]: bbox[1][0]]
+                    face_detector.run_facedetector(face_subsection)
+                    faces = face_detector.faces
+                    if len(faces) != 0:
+                        face = faces[0]
+                        smile_detector.preprocess_image(face_subsection[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                        if smile_detector.predict():
+                            people.count += 1
+
+
+        if frame_count % 1000 == 0:
+            df = pd.DataFrame()
+            ids = []
+            smile_count = []
+            last_bbox = []
+
+            for people in person_counter.people:
+                ids.append(people.id)
+                smile_count.append(people.count)
+                last_bbox.append(people.bbox)
+            df["ID"] = ids
+            df["Smiles_Detected"] = smile_count
+            df["Last_Location"] = last_bbox
+
+            df.to_csv("output.csv", index=False)
+        frame_count += 1
 
         # print people_tracker.previous_frame_bboxes
         # print people_tracker.current_frame_bboxes

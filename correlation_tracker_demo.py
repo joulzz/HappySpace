@@ -80,30 +80,31 @@ def main():
             new_person.id = max_idx
             person_counter.add(new_person)
 
+        if frame_count % 10 == 0:
+            for people in person_counter.people:
+                if people.current:
+                    bbox = people.bbox
+                    smile_detector.preprocess_image(current_frame[bbox[0][1]: bbox[1][1], bbox[0][0]: bbox[1][0]])
+                    if smile_detector.predict():
+                        people.count += 1
 
-        for people in person_counter.people:
-            if people.current:
-                bbox = people.bbox
-                smile_detector.preprocess_image(current_frame[bbox[0][1]: bbox[1][1], bbox[0][0]: bbox[1][0]])
-                if smile_detector.predict():
-                    people.count += 1
 
+        if frame_count % 1000 == 0:
+            df = pd.DataFrame()
+            ids = []
+            smile_count = []
+            last_bbox = []
 
-        if frame_count % 100 == 0:
-        	df = pd.DataFrame()
-        	ids = []
-        	smile_count = []
-        	last_bbox = []
+            for people in person_counter.people:
+                ids.append(people.id)
+                smile_count.append(people.count)
+                last_bbox.append(people.bbox)
+            df["ID"] = ids
+            df["Smiles_Detected"] = smile_count
+            df["Last_Location"] = last_bbox
 
-        	for people in person_counter.people:
-        		ids.append(people.id)
-        		smile_count.append(people.count)
-        		last_bbox.append(people.bbox)
-        	df["ID"] = ids
-        	df["Smiles_Detected"] = smile_count
-        	df["Last_Location"] = last_bbox
-
-        	df.to_csv("output.csv", index=False)
+            df.to_csv("output.csv", index=False)
+        frame_count += 1
 
         # print people_tracker.previous_frame_bboxes
         # print people_tracker.current_frame_bboxes
