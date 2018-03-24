@@ -1,7 +1,7 @@
 
 \.idea/
 \.Models/
-\*.pyc
+*.pyc
 
 Models/
 
