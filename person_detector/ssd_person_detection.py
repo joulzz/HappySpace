@@ -27,7 +27,7 @@ class PersonDetector:
         cols = frame.shape[1]
         for i in range(self.detections.shape[2]):
             confidence = self.detections[0, 0, i, 2]
-            if confidence > 0.6:
+            if confidence > 0.3:
                 class_id = int(self.detections[0, 0, i, 1])
 
                 xLeftBottom = int(self.detections[0, 0, i, 3] * cols)
@@ -35,19 +35,19 @@ class PersonDetector:
                 xRightTop = int(self.detections[0, 0, i, 5] * cols)
                 yRightTop = int(self.detections[0, 0, i, 6] * rows)
                 if class_id == 1:
-                    self.person_bounding_boxes.append(((xLeftBottom, yRightTop), (xRightTop, yLeftBottom)))
+                    self.person_bounding_boxes.append(((xLeftBottom, yLeftBottom), (xRightTop, yRightTop)))
 
         for person in self.person_bounding_boxes:
             for person2 in self.person_bounding_boxes:
                 if person == person2:
                     continue
                 center = (person2[0][0] + person2[1][0])/2, (person2[0][1] + person2[1][1])/2
-                area1 = (person[1][0] - person[0][0]) * (person[0][1] - person[1][1])
-                area2 = (person2[1][0] - person2[0][0]) * (person2[0][1] - person2[1][1])
+                area1 = (person[1][0] - person[0][0]) * (person[1][1] - person[0][1])
+                area2 = (person2[1][0] - person2[0][0]) * (person2[1][1] - person2[0][1])
 
 
 
-                if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[1][1] and center[1] < person[0][1]:
+                if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[0][1] and center[1] < person[1][1]:
                     if area1 > area2:
                         self.person_bounding_boxes.remove(person2)
                     elif area2 > area1:

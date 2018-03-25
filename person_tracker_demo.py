@@ -1,5 +1,5 @@
 from person_detector.ssd_person_detection import PersonDetector
-from tracking.camshift_tracker import Tracker
+from tracking.correlation_tracker import Tracker
 import cv2
 import numpy as np
 from face_detector.face_detector import FaceDetection
@@ -32,9 +32,9 @@ def main():
         draw_frame = np.copy(frame)
 
         # Initialize person detection
-        # face_detector.run_facedetector(current_frame)
-        persondetect.detect_person(current_frame)
-        people_tracker.current_frame_bboxes = persondetect.person_bounding_boxes
+        face_detector.run_facedetector(current_frame)
+        # persondetect.detect_person(current_frame)
+        people_tracker.current_frame_bboxes = face_detector.faces
 
         # for faces in people_tracker.current_frame_bboxes:
         #     cv2.rectangle(draw_frame, faces[0], faces[1], (0, 0, 255), 2)
@@ -52,7 +52,6 @@ def main():
                 cv2.putText(draw_frame, "Person ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
                 cv2.putText(draw_frame, "Smiles Count: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
 
-
         print state
         print bboxes
 
@@ -62,18 +61,13 @@ def main():
                 tracker.initialize_tracker(previous_frame, person.bbox)
                 tracker.tracker_run(current_frame)
                 tracked_bbox = tracker.tracked_bbox
-
-
-                print "Tracked bbox: " + str(tracked_bbox)
-                if len(tracked_bbox) == 0:
-                    continue
+                print "Tracked bbox"
+                print tracked_bbox                    
                 cv2.rectangle(draw_frame, tracked_bbox[0], tracked_bbox[1], (0, 255, 0), 2)
-
-
                 center = (tracked_bbox[0][0] + tracked_bbox[1][0]) / 2, (tracked_bbox[0][1] + tracked_bbox[1][1]) / 2
 
                 for current_bbox in people_tracker.current_frame_bboxes:
-                    if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[1][1] and center[1] <= current_bbox[0][1]:
+                    if center[0] >= current_bbox[0][0] and center[0] <= current_bbox[1][0] and center[1] >= current_bbox[0][1] and center[1] <= current_bbox[1][1]:
                         person.bbox = current_bbox
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(current_bbox)
@@ -82,23 +76,18 @@ def main():
         for bbox in people_tracker.current_frame_bboxes:
             new_person = People()
             new_person.bbox = bbox
+            new_person.count = 0
             new_person.current = True
             new_person.id = max_idx
             person_counter.add(new_person)
 
-
-        if frame_count % 10 == 0:
+        if frame_count % 7 == 0:
             for people in person_counter.people:
                 if people.current:
                     bbox = people.bbox
-                    face_subsection = current_frame[bbox[1][1]: bbox[0][1], bbox[0][0]: bbox[1][0]]
-                    face_detector.run_facedetector(face_subsection)
-                    faces = face_detector.faces
-                    if len(faces) != 0:
-                        face = faces[0]
-                        smile_detector.preprocess_image(face_subsection[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                        if smile_detector.predict():
-                            people.count += 1
+                    smile_detector.preprocess_image(current_frame[bbox[0][1]: bbox[1][1], bbox[0][0]: bbox[1][0]])
+                    if smile_detector.predict():
+                        people.count += 1
 
 
         if frame_count % 1000 == 0:

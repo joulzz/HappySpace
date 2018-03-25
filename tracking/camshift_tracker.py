@@ -16,7 +16,7 @@ class Tracker:
 
     def initialize_tracker(self, frame, bbox):
         self.get_frame(frame)
-        x0, y0, x1, y1 = bbox[0][0], bbox[1][1], bbox[1][0], bbox[0][1]
+        x0, y0, x1, y1 = bbox[0][0], bbox[0][1], bbox[1][0], bbox[1][1]
         self.track_window = (x0, y0, x1 - x0, y1 - y0)
         hsv_roi = self.hsv[y0:y1, x0:x1]
         mask_roi = self.mask[y0:y1, x0:x1]

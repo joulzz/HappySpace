@@ -6,6 +6,7 @@ class FaceDetection:
         self.cascade_classifier = cv2.CascadeClassifier(path)
 
     def run_facedetector(self, image):
+        self.faces = []
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = self.cascade_classifier.detectMultiScale(gray, 1.3, 5)
         for face in faces:
