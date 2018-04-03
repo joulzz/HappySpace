@@ -15,11 +15,11 @@ class PersonDetector:
 
     def load_ssd_model(self):
         print "Loaded DNN model"
-        self.net = cv2.dnn.readNetFromTensorflow(self.model_binary, self.model_config)
+        self.net = cv2.dnn.readNetFromCaffe(self.model_config, self.model_binary)
 
     def detect_person(self, frame):
         self.person_bounding_boxes= []
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (frame.shape[1], frame.shape[0]), 127.5, True, False)
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (512, 512), (127.5, 127.5, 127.5), True, False)
         self.net.setInput(blob)
         self.detections = self.net.forward()
 
@@ -34,7 +34,7 @@ class PersonDetector:
                 yLeftBottom = int(self.detections[0, 0, i, 4] * rows)
                 xRightTop = int(self.detections[0, 0, i, 5] * cols)
                 yRightTop = int(self.detections[0, 0, i, 6] * rows)
-                if class_id == 1:
+                if class_id == 15:
                     self.person_bounding_boxes.append(((xLeftBottom, yLeftBottom), (xRightTop, yRightTop)))
 
         # for person in self.person_bounding_boxes:
@@ -44,16 +44,16 @@ class PersonDetector:
         #         center = (person2[0][0] + person2[1][0])/2, (person2[0][1] + person2[1][1])/2
         #         area1 = (person[1][0] - person[0][0]) * (person[1][1] - person[0][1])
         #         area2 = (person2[1][0] - person2[0][0]) * (person2[1][1] - person2[0][1])
-
-                #
-                #
-                # if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[0][1] and center[1] < person[1][1]:
-                #     if area1 > area2:
-                #         self.person_bounding_boxes.remove(person2)
-                #     elif area2 > area1:
-                #         self.person_bounding_boxes.remove(person)
-                #     else:
-                #         self.person_bounding_boxes.remove(person)
+        #
+        #
+        #
+        #         if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[0][1] and center[1] < person[1][1]:
+        #             if area1 > area2:
+        #                 self.person_bounding_boxes.remove(person2)
+        #             elif area2 > area1:
+        #                 self.person_bounding_boxes.remove(person)
+        #             else:
+        #                 self.person_bounding_boxes.remove(person)
                     # cv2.rectangle(frame, , , (255, 0, 0), 2)
                     # cv2.imshow('frame', frame)
                     # cv2.waitKey(10)
