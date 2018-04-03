@@ -19,7 +19,7 @@ class PersonDetector:
 
     def detect_person(self, frame):
         self.person_bounding_boxes= []
-        blob = cv2.dnn.blobFromImage(frame, 1./255, (544, 544), (0, 0, 0), True, False)
+        blob = cv2.dnn.blobFromImage(frame, 1./255, (416, 416), (0, 0, 0), True, False)
         self.net.setInput(blob)
         self.detections = self.net.forward()
 
@@ -33,7 +33,7 @@ class PersonDetector:
             if class_id != 0:
                 continue
             confidence = confidences[class_id]
-            if confidence > 0.6:
+            if confidence > 0.5:
                 center_x = int(detection[0] * rows)
                 center_y = int(detection[1] * cols)
                 width = int(detection[2] * rows)
@@ -43,29 +43,6 @@ class PersonDetector:
                 right = center_x + width/2
                 bottom = center_y + height/2
                 self.person_bounding_boxes.append(((int(left), int(top)), (int(right), int(bottom))))
-
-        # for person in self.person_bounding_boxes:
-        #     for person2 in self.person_bounding_boxes:
-        #         if person == person2:
-        #             continue
-        #         center = (person2[0][0] + person2[1][0])/2, (person2[0][1] + person2[1][1])/2
-        #         area1 = (person[1][0] - person[0][0]) * (person[1][1] - person[0][1])
-        #         area2 = (person2[1][0] - person2[0][0]) * (person2[1][1] - person2[0][1])
-        #
-        #
-        #
-        #         if center[0] > person[0][0] and center[0] < person[1][0] and center[1] > person[0][1] and center[1] < person[1][1]:
-        #             if area1 > area2:
-        #                 self.person_bounding_boxes.remove(person2)
-        #             elif area2 > area1:
-        #                 self.person_bounding_boxes.remove(person)
-        #                 break
-        #             else:
-        #                 self.person_bounding_boxes.remove(person)
-        #                 break
-                    # cv2.rectangle(frame, , , (255, 0, 0), 2)
-                    # cv2.imshow('frame', frame)
-                    # cv2.waitKey(10)
 
 
 if __name__ == "__main__":

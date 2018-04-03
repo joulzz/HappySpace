@@ -73,8 +73,8 @@ def main():
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(current_bbox)
 
-        max_idx = len(person_counter.people)
         for bbox in people_tracker.current_frame_bboxes:
+            max_idx = len(person_counter.people)
             new_person = People()
             new_person.bbox = bbox
             new_person.count = 0

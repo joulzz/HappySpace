@@ -23,3 +23,5 @@ class People:
         self.current = False
         self.bbox = []
         self.count = 0
+        self.history = []
+        self.timestamp = None
