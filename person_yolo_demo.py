@@ -72,6 +72,7 @@ def main():
             new_person.bbox = bbox
             new_person.current = True
             new_person.id = max_idx
+            new_person.timestamp = frame_count
             person_counter.add(new_person)
 
         if frame_count % 2 == 0:
@@ -84,7 +85,6 @@ def main():
                         center_face = (face[0][0] + face[1][0]) / 2, (face[0][1] + face[1][1]) / 2
                         if center_face[0] >= bbox[0][0] and center_face[0] <= bbox[1][0] and center_face[1] >= bbox[0][1] and center_face[1] <= bbox[1][1]:
                             smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-
                             if smile_detector.predict():
                                 people.count += 1
 
@@ -100,19 +100,26 @@ def main():
         print bboxes
 
 
-        if frame_count % 1000 == 0:
+        if frame_count % 10 == 0:
             df = pd.DataFrame()
             ids = []
             smile_count = []
             last_bbox = []
-
+            location_history = []
+            timestamp = []
             for people in person_counter.people:
+                people.history.append(people.bbox)
                 ids.append(people.id)
                 smile_count.append(people.count)
                 last_bbox.append(people.bbox)
+                location_history.append(people.history)
+                timestamp.append(people.timestamp)
+
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
             df["Last_Location"] = last_bbox
+            df["Location_History"] =location_history
+            df["Timestamp"] = timestamp
 
             df.to_csv("output.csv", index=False)
         frame_count += 1
