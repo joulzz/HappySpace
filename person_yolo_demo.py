@@ -2,20 +2,27 @@ from person_detector.yolo_person_detection  import PersonDetector
 from tracking.iou_tracking import Tracker
 import cv2
 import numpy as np
+import sys
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from smile_counter.smile_counter import SmileCounter
 from sentiment_net.sentiment_net import SmileDetector
 import pandas as pd
+from skvideo.io import LibAVWriter
 
 def main():
-    persondetect = PersonDetector("/home/suraj/Downloads/yolov2.weights", "/home/suraj/Downloads/yolov2.cfg", "yolo")
+    if len(sys.argv) != 2:
+        size = 416
+    else:
+        size = int(sys.argv[1])
+    persondetect = PersonDetector("Models/yolo/yolov2.weights", "Models/yolo/yolov2.cfg", "yolo", size)
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
     face_detector = FaceDetection("Models/haarcascade_frontalface_default.xml")
     smile_detector = SmileDetector()
     smile_counter = SmileCounter()
-    cap = cv2.VideoCapture("/home/suraj/Downloads/control_video.mov")
+    cap = cv2.VideoCapture(0)
+    writer = LibAVWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     tracker = Tracker()
@@ -28,6 +35,7 @@ def main():
     # Select Area to track
     roi = cv2.selectROI('frame', frame)
     while True:
+        total_smile_counter = 0
         _, frame = cap.read()
         original = np.copy(frame)
         frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
@@ -89,13 +97,14 @@ def main():
                                 people.count += 1
 
         for person in person_counter.people:
+            total_smile_counter += person.count
             state.append(person.current)
             bboxes.append(person.bbox)
             if person.current:
                 people_tracker.previous_frame_bboxes.append(person.bbox)
-                cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 0, 0), 2)
-                cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 5)
-                cv2.putText(draw_frame, "Smiles: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 3)
+                cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 3)
+                cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+                cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
         print state
         print bboxes
 
@@ -125,11 +134,17 @@ def main():
         frame_count += 1
 
         original[roi[1]: roi[3], roi[0]: roi[2]] = draw_frame
+        cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+
         cv2.imshow('frame', original)
-        cv2.waitKey(2)
+        writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+        writer.writeFrame(writer_image)
+        ch = 0xFF & cv2.waitKey(2)
+        if ch == 27:
+            break
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         print "Inference time: {0} ms \n FPS: {1}".format(inf_time * 1000, 1/ inf_time)
 
-
+    writer.close()
 if __name__ == "__main__":
     main()
