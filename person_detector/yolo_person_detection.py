@@ -3,8 +3,9 @@ import numpy as np
 
 
 class PersonDetector:
-    def __init__(self, model_binary, model_config, model_type):
+    def __init__(self, model_binary, model_config, model_type, size):
         self.model_binary = model_binary
+        self.size = size
         self.model_config = model_config
         self.person_bounding_boxes = []
         print dir(self)
@@ -19,7 +20,7 @@ class PersonDetector:
 
     def detect_person(self, frame):
         self.person_bounding_boxes= []
-        blob = cv2.dnn.blobFromImage(frame, 1./255, (416, 416), (0, 0, 0), True, False)
+        blob = cv2.dnn.blobFromImage(frame, 1./255, (self.size, self.size), (0, 0, 0), True, False)
         self.net.setInput(blob)
         self.detections = self.net.forward()
 
@@ -43,18 +44,3 @@ class PersonDetector:
                 right = center_x + width/2
                 bottom = center_y + height/2
                 self.person_bounding_boxes.append(((int(left), int(top)), (int(right), int(bottom))))
-
-
-if __name__ == "__main__":
-    persondetect = PersonDetector("../Models/ssd/ssd.pb", "../Models/ssd/ssd.pbtxt", "ssd")
-    cap = cv2.VideoCapture(0)
-    i =0
-    while True:
-        _, frame = cap.read()
-        persondetect.detect_person(frame)
-        draw_frame = np.copy(frame)
-        for bbox in persondetect.person_bounding_boxes:
-            cv2.rectangle(draw_frame, bbox[0], bbox[1], (255, 0, 0), 2)
-        cv2.imshow('frame', draw_frame)
-        cv2.waitKey(10)
-        i += 1

@@ -37,6 +37,7 @@ scipy==1.0.0
 singledispatch==3.4.0.3
 six==1.11.0
 subprocess32==3.2.7
+scikit-video
 tensorboard==1.6.0
 tensorflow==1.6.0
 termcolor==1.1.0
