@@ -79,15 +79,16 @@ def main():
 
 
 
-        if frame_count % 5 ==0:
-            for people in person_counter.people:
-                if people.current:
-                    face = people.bbox
-                    center_face = (face[0][0] + face[1][0]) / 2, (face[0][1] + face[1][1]) / 2
-                    if center_face[0] >= bbox[0][0] and center_face[0] <= bbox[1][0] and center_face[1] >= bbox[0][1] and center_face[1] <= bbox[1][1]:
-                        smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                        if smile_detector.predict():
-                            people.count += 1
+        # if frame_count % 5 ==0:
+
+
+        for people in person_counter.people:
+            print "{0}, {1}, {2}".format(people.bbox, people.current, people.count)
+            if people.current:
+                face = people.bbox
+                smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                if smile_detector.predict():
+                    people.count += 1
 
         for person in person_counter.people:
             total_smile_counter += person.count
@@ -98,6 +99,7 @@ def main():
                 cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 3)
                 cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
                 cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+
 
         if time_elapsed % 3600 == 0:
             df = pd.DataFrame()
