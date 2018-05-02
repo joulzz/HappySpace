@@ -8,3 +8,9 @@ Running the code
 Change 416 to higher values to increase accuracy and lower to increase speed
 
 Once the script runs drag the mouse to select an area of interest and press the spacebar to continue
+
+
+To run the GPU version of the code
+1. Open a terminal in this folder
+2. Run "bash install_dependencies.sh"
+3. Run "python gpu_yolo_demo.py"
