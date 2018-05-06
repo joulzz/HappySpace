@@ -6,18 +6,24 @@ class PeopleTracker:
         self.replaced_indices = []
 
 class PeopleCounter:
+    """
+    Counter class to hold people instances
+    """
     def __init__(self):
         self.people = []
 
-    def add(self, people_features):
-        self.people.append(people_features)
+    def add(self, people_instance):
+        self.people.append(people_instance)
 
-    def remove(self, people_features):
+    def remove(self, people_instance):
         for people in self.people:
-            if people.id == people_features.id:
+            if people.id == people_instance.id:
                 people.bbox = []
 
 class People:
+    """"
+    Class to represent people attributes
+    """
     def __init__(self):
         self.id = 0
         self.current = False
