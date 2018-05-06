@@ -1,26 +1,29 @@
 from tracking.iou_tracking import Tracker
 import cv2
 import numpy as np
-import sys
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
-from smile_counter.smile_counter import SmileCounter
 from sentiment_net.sentiment_net import SmileDetector
 import pandas as pd
 from skvideo.io import LibAVWriter
 
 def main():
+
+    # Keep track of time to store data into csv files
     time_elapsed = 0
+
+
+    # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
     face_detector = FaceDetection("Models/haarcascade_frontalface_default.xml")
     smile_detector = SmileDetector()
-    smile_counter = SmileCounter()
+    tracker = Tracker()
+
     cap = cv2.VideoCapture(0)
     writer = LibAVWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    tracker = Tracker()
     previous_frame = []
     current_frame = None
     frame_count = 0
@@ -50,7 +53,7 @@ def main():
         state = []
         bboxes = []
 
-        # if frame_count % 3 == 0:
+        # Here person_counter.people corresponds to previous frame people and people_tracker.current_frame_bboxes to people in current frame
         for person in person_counter.people:
             if person.current:
                 person.current = False
@@ -77,7 +80,7 @@ def main():
             new_person.timestamp = frame_count
             person_counter.add(new_person)
 
-
+        # person_counter.people is now updated to correspond to people in the current frame
 
         # if frame_count % 5 ==0:
 
@@ -92,8 +95,8 @@ def main():
 
         for person in person_counter.people:
             total_smile_counter += person.count
-            state.append(person.current)
-            bboxes.append(person.bbox)
+            # state.append(person.current)
+            # bboxes.append(person.bbox)
             if person.current:
                 people_tracker.previous_frame_bboxes.append(person.bbox)
                 cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 3)
@@ -139,5 +142,7 @@ def main():
         time_elapsed += inf_time
 
     writer.close()
+
+
 if __name__ == "__main__":
     main()
