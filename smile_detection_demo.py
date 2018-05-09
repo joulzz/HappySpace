@@ -20,23 +20,22 @@ def main():
     smile_detector = SmileDetector()
     tracker = Tracker()
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("test.mp4")
     writer = LibAVWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     previous_frame = []
     current_frame = None
     frame_count = 0
-    cv2.namedWindow('frame', cv2.WINDOW_FREERATIO)
     _, frame = cap.read()
 
     # Select Area to track
-    roi = cv2.selectROI('frame', frame)
+    # roi = cv2.selectROI('frame', frame)
     while True:
         total_smile_counter = 0
         _, frame = cap.read()
         original = np.copy(frame)
-        frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
+        # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
         # Set previous frame at the start
         if len(previous_frame) == 0:
@@ -128,10 +127,10 @@ def main():
             df.to_csv("output.csv", index=False)
         frame_count += 1
 
-        original[roi[1]: roi[3], roi[0]: roi[2]] = draw_frame
+        original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
 
-        cv2.imshow('frame', original)
+        # cv2.imshow('frame', original)
         writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
         writer.writeFrame(writer_image)
         ch = 0xFF & cv2.waitKey(2)
