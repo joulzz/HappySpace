@@ -20,7 +20,7 @@ def main():
     smile_detector = SmileDetector()
     tracker = Tracker()
 
-    cap = cv2.VideoCapture("test.mp4")
+    cap = cv2.VideoCapture(0)
     writer = LibAVWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -85,7 +85,6 @@ def main():
 
 
         for people in person_counter.people:
-            print "{0}, {1}, {2}".format(people.bbox, people.current, people.count)
             if people.current:
                 face = people.bbox
                 smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
@@ -137,7 +136,7 @@ def main():
         if ch == 27:
             break
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
-        print "Inference time: {0} ms \n FPS: {1}".format(inf_time * 1000, 1/ inf_time)
+        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, float(time_elapsed)/3600)
         time_elapsed += inf_time
 
     writer.close()
