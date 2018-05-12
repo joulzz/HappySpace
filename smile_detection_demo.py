@@ -5,7 +5,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 import pandas as pd
-from skvideo.io import LibAVWriter
+from skvideo.io import FFmpegWriter
 import gc
 import subprocess
 
@@ -25,7 +25,7 @@ def main():
 
     # cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
     cap = cv2.VideoCapture(0)
-    writer = LibAVWriter("output.mp4")
+    writer = FFmpegWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     previous_frame = []
