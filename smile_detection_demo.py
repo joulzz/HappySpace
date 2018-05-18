@@ -11,6 +11,8 @@ import subprocess
 from configuration_module.json_parser import json_parser
 from time import gmtime, strftime
 import sys
+import boto3
+
 
 def main():
 
@@ -22,15 +24,16 @@ def main():
 
 
     # Keep track of time to store data into csv files
-    time_elapsed = 0
+    time_elapsed = 1
 
-
+    last_write = 1
     # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
     face_detector = FaceDetection("Models/haarcascade_frontalface_default.xml")
     smile_detector = SmileDetector()
     tracker = Tracker()
+    s3 = boto3.resource('s3')
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
@@ -68,7 +71,7 @@ def main():
 
             state = []
             bboxes = []
-
+            current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
             # Here person_counter.people corresponds to previous frame people and people_tracker.current_frame_bboxes to people in current frame
             for person in person_counter.people:
                 if person.current:
@@ -93,7 +96,7 @@ def main():
                 new_person.bbox = bbox
                 new_person.current = True
                 new_person.id = max_idx
-                new_person.timestamp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                new_person.timestamp = current_time
                 person_counter.add(new_person)
 
             # person_counter.people is now updated to correspond to people in the current frame
@@ -118,8 +121,9 @@ def main():
                     cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
                     cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
+            inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
 
-            if time_elapsed % csv_write_frequency == 0:
+            if int(time_elapsed) % csv_write_frequency == 0 and last_write != int(time_elapsed):
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -143,6 +147,13 @@ def main():
 
                 df.to_csv("output.csv", index=False)
                 print("Wrote to CSV")
+
+
+                if remote_upload:
+                    data = open('output.csv', 'rb')
+                    s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+                last_write = int(time_elapsed)
+
             frame_count += 1
 
             original = draw_frame
@@ -157,11 +168,8 @@ def main():
                 writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
                 writer.writeFrame(writer_image)
 
-            inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
             print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
-            time_elapsed = float(time_elapsed)
             time_elapsed += inf_time
-            time_elapsed = int(time_elapsed)
             gc.collect()
 
         except:

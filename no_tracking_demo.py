@@ -10,6 +10,8 @@ from time import gmtime, strftime
 from smile_counter.people_counter import PeopleCounter, People
 from configuration_module.json_parser import json_parser
 import sys
+import boto3
+
 
 def main():
     if len(sys.argv)!= 2:
@@ -18,8 +20,9 @@ def main():
 
     tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
     # Keep track of time to store data into csv files
-    time_elapsed = 0
-
+    time_elapsed = 1
+    last_write = 1
+    s3 = boto3.resource('s3')
 
     # Create instances of required class objects
 
@@ -61,6 +64,7 @@ def main():
             for face in face_detector.faces:
                 current_frame_bboxes.append(face)
 
+            current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
 
             for face in current_frame_bboxes:
@@ -69,7 +73,7 @@ def main():
                 new_person.bbox = face
                 new_person.current = True
                 new_person.id = max_idx
-                new_person.timestamp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                new_person.timestamp = current_time
                 person_counter.add(new_person)
                 max_idx += 1
 
@@ -80,8 +84,9 @@ def main():
                     if smile_detector.predict():
                         total_smile_counter += 1
                         new_person.count += 1
+            inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
 
-            if time_elapsed % csv_write_frequency == 0:
+            if int(time_elapsed) % csv_write_frequency == 0 and last_write != int(time_elapsed):
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -105,6 +110,13 @@ def main():
 
                 df.to_csv("output.csv", index=False)
                 print("Wrote to CSV")
+
+                if remote_upload:
+                    data = open('output.csv', 'rb')
+                    s3.Bucket('smile-log').put_object(
+                        Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+                last_write = int(time_elapsed)
+                
             frame_count += 1
 
             original = draw_frame
@@ -117,11 +129,8 @@ def main():
                 ch = 0xFF & cv2.waitKey(2)
                 if ch == 27:
                     break
-            inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
             print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, float(time_elapsed)/3600)
-            time_elapsed = float(time_elapsed)
             time_elapsed += inf_time
-            time_elapsed = int(time_elapsed)
             gc.collect()
 
         except:
