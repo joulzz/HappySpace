@@ -29,18 +29,9 @@ def json_parser(json_path):
         remote_upload = json_config["remote_upload"]
     else:
         remote_upload = False
-    if "running_time" in json_config:
-        running_time = json_config["running_time"]
+    if "csv_write_frequency" in json_config:
+        csv_write_frequency = json_config["csv_write_frequency"]
     else:
-        running_time = 8
-    if "min_face" in json_config:
-        min_face = json_config["min_face"]
-    else:
-        min_face = [30, 30]
-    if "max_face" in json_config:
-        max_face = json_config["max_face"]
-    else:
-        max_face = []
+        csv_write_frequency = 3600
 
-
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency

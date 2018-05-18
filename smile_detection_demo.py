@@ -8,8 +8,18 @@ import pandas as pd
 from skvideo.io import FFmpegWriter
 import gc
 import subprocess
+from configuration_module.json_parser import json_parser
+from time import gmtime, strftime
+import sys
 
 def main():
+
+    if len(sys.argv)!= 2:
+        print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
+        return
+
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
+
 
     # Keep track of time to store data into csv files
     time_elapsed = 0
@@ -22,10 +32,12 @@ def main():
     smile_detector = SmileDetector()
     tracker = Tracker()
 
+    if display_flag:
+        cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    # cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
     cap = cv2.VideoCapture(0)
-    writer = FFmpegWriter("output.mp4")
+    if write_video:
+        writer = FFmpegWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     previous_frame = []
@@ -81,20 +93,20 @@ def main():
                 new_person.bbox = bbox
                 new_person.current = True
                 new_person.id = max_idx
-                new_person.timestamp = frame_count
+                new_person.timestamp = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                 person_counter.add(new_person)
 
             # person_counter.people is now updated to correspond to people in the current frame
 
             # if frame_count % 5 ==0:
 
-
-            for people in person_counter.people:
-                if people.current:
-                    face = people.bbox
-                    smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                    if smile_detector.predict():
-                        people.count += 1
+            if frame_count % (skip_frame+1) == 0:
+                for people in person_counter.people:
+                    if people.current:
+                        face = people.bbox
+                        smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                        if smile_detector.predict():
+                            people.count += 1
 
             for person in person_counter.people:
                 total_smile_counter += person.count
@@ -107,7 +119,7 @@ def main():
                     cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
 
-            if frame_count % 5000 == 0:
+            if time_elapsed % csv_write_frequency == 0:
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -130,27 +142,32 @@ def main():
                 df["Timestamp"] = timestamp
 
                 df.to_csv("output.csv", index=False)
+                print("Wrote to CSV")
             frame_count += 1
 
             original = draw_frame
             cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+            if display_flag:
+                cv2.imshow('frame', original)
+                ch = 0xFF & cv2.waitKey(2)
+                if ch == 27:
+                    break
 
-            # cv2.imshow('frame', original)
-            # ch = 0xFF & cv2.waitKey(2)
-            # if ch == 27:
-            #     break
-            writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-            writer.writeFrame(writer_image)
+            if write_video:
+                writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+                writer.writeFrame(writer_image)
 
             inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
-            print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, float(time_elapsed)/3600)
+            print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
+            time_elapsed = float(time_elapsed)
             time_elapsed += inf_time
+            time_elapsed = int(time_elapsed)
             gc.collect()
 
         except:
             pass
-
-    writer.close()
+    if write_video:
+        writer.close()
 
 
 if __name__ == "__main__":
