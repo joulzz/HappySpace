@@ -1,0 +1,9 @@
+{
+  "tinkerboard_ID": "Nkdoo-Mark-I",
+  "skip_frames": 0,
+  "display": 0,
+  "write_video":1,
+  "remote_upload": 0,
+  "csv_write_frequency": 10
+
+}
