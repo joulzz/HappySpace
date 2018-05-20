@@ -58,6 +58,8 @@ class EMR:
     Loads pre-trained model.
     model.load() is an inbuilt function in tflearn
     """
+
+    print("Model Path: {0}".format(self.path))
     if isfile("{0}.meta".format(self.path)):
       self.model.load("{0}".format(self.path))
       print('\n---> Pre-trained model loaded')
