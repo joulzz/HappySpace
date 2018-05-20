@@ -2,11 +2,14 @@ from em_model import EMR
 import cv2
 import numpy as np
 from sklearn.externals import joblib
+import os
+
 class SmileDetector:
     def __init__(self):
-        self.network = EMR("Models/sentiment_net/sentiment_net")
+        dir_path = os.path.dirname(os.path.abspath(__file__))
+        self.network = EMR(os.path.abspath(os.path.join(dir_path, "../Models/sentiment_net/sentiment_net")))
         self.network.build_network()
-        self.final_layer = joblib.load("Models/svm_model.pkl")
+        self.final_layer = joblib.load(os.path.abspath(os.path.join(dir_path, "../Models/svm_model.pkl")))
 
     def preprocess_image(self, image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

@@ -12,9 +12,11 @@ from configuration_module.json_parser import json_parser
 from time import gmtime, strftime
 import sys
 import boto3
+import os
 
 
 def main():
+    dir_path = os.path.dirname(os.path.abspath(__file__))
 
     if len(sys.argv)!= 2:
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
@@ -30,7 +32,7 @@ def main():
     # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
-    face_detector = FaceDetection("Models/haarcascade_frontalface_default.xml")
+    face_detector = FaceDetection(os.path.join(dir_path, "Models/haarcascade_frontalface_default.xml"))
     smile_detector = SmileDetector()
     tracker = Tracker()
     s3 = boto3.resource('s3')
@@ -40,15 +42,15 @@ def main():
 
     cap = cv2.VideoCapture(0)
     if write_video:
-        writer = FFmpegWriter("output.mp4")
+        writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     previous_frame = []
     frame_count = 0
     _, frame = cap.read()
 
-    subprocess.check_output(["sudo", "swapoff","-a"])
-    subprocess.check_output(["sudo", "swapon","-a"])
+    # subprocess.check_output(["sudo", "swapoff","-a"])
+    # subprocess.check_output(["sudo", "swapon","-a"])
 
     while cap.isOpened():
         try:
@@ -123,7 +125,7 @@ def main():
 
             inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
 
-            if int(time_elapsed) % csv_write_frequency == 0 and last_write != int(time_elapsed):
+            if int(time_elapsed / 3600) % csv_write_frequency == 0 and last_write != int(time_elapsed):
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -145,14 +147,15 @@ def main():
                 df["Location_History"] =location_history
                 df["Timestamp"] = timestamp
 
-                df.to_csv("output.csv", index=False)
+                df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
                 print("Wrote to CSV")
 
 
                 if remote_upload:
-                    data = open('output.csv', 'rb')
+                    data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                     s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
                 last_write = int(time_elapsed)
+                break
 
             frame_count += 1
 
