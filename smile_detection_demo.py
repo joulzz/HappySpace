@@ -155,7 +155,9 @@ def main():
                     data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                     s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
                 last_write = int(time_elapsed)
-                break
+
+                if last_write != 0:
+                    break
 
             frame_count += 1
 
