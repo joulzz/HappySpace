@@ -29,9 +29,9 @@ def json_parser(json_path):
         remote_upload = json_config["remote_upload"]
     else:
         remote_upload = False
-    if "csv_write_frequency" in json_config:
-        csv_write_frequency = json_config["csv_write_frequency"]
+    if "running_time" in json_config:
+        running_time = json_config["running_time"]
     else:
-        csv_write_frequency = 3600
+        running_time = 8
 
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time
