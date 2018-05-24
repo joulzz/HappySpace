@@ -22,8 +22,7 @@ def main():
 
     tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
     # Keep track of time to store data into csv files
-    time_elapsed = 1
-    last_write = 1
+    start_time = int(strftime("%H%M", gmtime()))
     s3 = boto3.resource('s3')
 
     # Create instances of required class objects
@@ -87,8 +86,8 @@ def main():
                         total_smile_counter += 1
                         new_person.count += 1
             inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
-
-            if int(time_elapsed / 3600) % csv_write_frequency == 0 and last_write != int(time_elapsed):
+            time_elapsed = int(strftime("%H%M", gmtime()))
+            if (time_elapsed - start_time) / 100 > csv_write_frequency:
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -117,7 +116,6 @@ def main():
                     data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                     s3.Bucket('smile-log').put_object(
                         Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
-                last_write = int(time_elapsed)
                 break
             frame_count += 1
 
