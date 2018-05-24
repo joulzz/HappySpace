@@ -25,10 +25,7 @@ def main():
     tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
 
 
-    # Keep track of time to store data into csv files
-    time_elapsed = 1
 
-    last_write = 1
     # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
@@ -51,6 +48,7 @@ def main():
 
     # subprocess.check_output(["sudo", "swapoff","-a"])
     # subprocess.check_output(["sudo", "swapon","-a"])
+    start_time = int(strftime("%H%M", gmtime()))
 
     while cap.isOpened():
         total_smile_counter = 0
@@ -123,8 +121,8 @@ def main():
                 cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
-
-        if int(time_elapsed / 3600) % csv_write_frequency == 0 and last_write != int(time_elapsed / 3600):
+        time_elapsed = int(strftime("%H%M", gmtime()))
+        if (time_elapsed - start_time)/100 > csv_write_frequency:
             frame_count = 0
             df = pd.DataFrame()
             ids = []
@@ -153,10 +151,7 @@ def main():
             if remote_upload:
                 data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                 s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
-            last_write = int(time_elapsed / 3600)
-
-            if last_write != 0:
-                break
+            break
 
         frame_count += 1
 
@@ -172,8 +167,7 @@ def main():
             writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
             writer.writeFrame(writer_image)
 
-        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
-        time_elapsed += inf_time
+        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, (time_elapsed - start_time)/100)
         gc.collect()
 
     if write_video:
