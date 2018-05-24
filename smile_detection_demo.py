@@ -22,7 +22,7 @@ def main():
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
 
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time = json_parser(sys.argv[1])
 
 
 
@@ -122,7 +122,7 @@ def main():
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
-        if (time_elapsed - start_time)/100 > csv_write_frequency:
+        if (time_elapsed - start_time)/100 > running_time:
             frame_count = 0
             df = pd.DataFrame()
             ids = []

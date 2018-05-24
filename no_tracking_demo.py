@@ -20,7 +20,7 @@ def main():
         return
     dir_path = os.path.dirname(os.path.abspath(__file__))
 
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, csv_write_frequency = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time = json_parser(sys.argv[1])
     # Keep track of time to store data into csv files
     start_time = int(strftime("%H%M", gmtime()))
     s3 = boto3.resource('s3')
@@ -87,7 +87,7 @@ def main():
                         new_person.count += 1
             inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
             time_elapsed = int(strftime("%H%M", gmtime()))
-            if (time_elapsed - start_time) / 100 > csv_write_frequency:
+            if (time_elapsed - start_time) / 100 > running_time:
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
