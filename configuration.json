@@ -1,9 +1,9 @@
 {
-  "tinkerboard_ID": "Nkdoo-Mark-I",
+  "tinkerboard_ID": "Nkdoo-Mark-II",
   "skip_frames": 0,
-  "display": 0,
-  "write_video":1,
-  "remote_upload": 0,
-  "running_time": 8
+  "display": 1,
+  "write_video":0,
+  "remote_upload": 1,
+  "running_time": 2
 
 }
