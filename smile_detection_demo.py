@@ -22,7 +22,7 @@ def main():
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
 
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face = json_parser(sys.argv[1])
 
 
 
@@ -65,7 +65,7 @@ def main():
         draw_frame = np.copy(frame)
 
         # Initialize face detection
-        face_detector.run_facedetector(current_frame)
+        face_detector.run_facedetector(current_frame, min_face, max_face)
         people_tracker.current_frame_bboxes = face_detector.faces
 
         state = []
