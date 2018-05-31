@@ -49,7 +49,8 @@ def main():
     # subprocess.check_output(["sudo", "swapoff","-a"])
     # subprocess.check_output(["sudo", "swapon","-a"])
     start_time = int(strftime("%H%M", gmtime()))
-
+    inference_time_sum = 0
+    average_fps = 0
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
@@ -103,6 +104,7 @@ def main():
         # if frame_count % 5 ==0:
 
         if frame_count % (skip_frame+1) == 0:
+            print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
                     face = people.bbox
@@ -167,7 +169,15 @@ def main():
             writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
             writer.writeFrame(writer_image)
 
-        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, (time_elapsed - start_time)/100)
+        if frame_count % 30 == 0:
+            average_fps = 1 / (inference_time_sum / 30)
+            inference_time_sum = 0
+
+        else:
+            inference_time_sum += inf_time
+
+        print "Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
+                                                                                   (time_elapsed - start_time) / 100)
         gc.collect()
 
     if write_video:

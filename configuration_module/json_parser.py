@@ -10,8 +10,8 @@ def json_parser(json_path):
     else:
         tinkerboard_id = "Default"
 
-    if "skip_frame" in json_config:
-        skip_frame = json_config["skip_frame"]
+    if "skip_frames" in json_config:
+        skip_frame = json_config["skip_frames"]
     else:
         skip_frame = 0
 

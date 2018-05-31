@@ -46,6 +46,8 @@ def main():
     subprocess.check_output(["sudo", "swapon","-a"])
     total_smile_counter = 0
     max_idx = 0
+    inference_time_sum = 0
+    average_fps = 0
     while cap.isOpened():
         _, frame = cap.read()
         original = np.copy(frame)
@@ -76,8 +78,8 @@ def main():
             person_counter.add(new_person)
             max_idx += 1
 
-
             if frame_count % (skip_frame +1) == 0:
+                print "Sentiment Net Frame Run"
                 smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
 
                 if smile_detector.predict():
@@ -127,7 +129,15 @@ def main():
             ch = 0xFF & cv2.waitKey(2)
             if ch == 27:
                 break
-        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
+
+        if frame_count % 30 == 0:
+            average_fps = 1/ (inference_time_sum/30)
+            inference_time_sum = 0
+
+        else:
+            inference_time_sum += inf_time
+
+        print "Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps, (time_elapsed - start_time)/100)
         gc.collect()
 
     if write_video:
