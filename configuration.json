@@ -1,0 +1,11 @@
+{
+  "tinkerboard_ID": "Nkdoo-Mark-II",
+  "skip_frames": 0,
+  "display": 1,
+  "write_video":0,
+  "remote_upload": 1,
+  "min_face": [30, 30],
+  "max_face": [400, 400],
+  "running_time": 8
+
+}

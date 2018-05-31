@@ -1,6 +1,8 @@
 from person_detector.yolo_person_detection  import PersonDetector
 from tracking.iou_tracking import Tracker
 import cv2
+from time import gmtime, strftime
+
 import numpy as np
 import sys
 from face_detector.face_detector import FaceDetection
@@ -8,37 +10,53 @@ from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from smile_counter.smile_counter import SmileCounter
 from sentiment_net.sentiment_net import SmileDetector
 import pandas as pd
-from skvideo.io import LibAVWriter
+from skvideo.io import FFmpegWriter
+from configuration_module.json_parser import json_parser
+import os
+import boto3
 
 def main():
+    s3 = boto3.resource('s3')
+
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+
     if len(sys.argv) != 2:
-        size = 416
-    else:
-        size = int(sys.argv[1])
-    persondetect = PersonDetector("Models/yolo/yolov2.weights", "Models/yolo/yolov2.cfg", "yolo", size)
+        print(
+            "\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
+        return
+
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face = json_parser(
+        sys.argv[1])
+
+    persondetect = PersonDetector(os.path.realpath(os.path.join(dir_path, "Models/tiny_yolo/yolov2-tiny.weights")), os.path.realpath(os.path.join(dir_path, "Models/tiny_yolo/yolov2-tiny.cfg")), "yolo", 416)
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
     face_detector = FaceDetection("Models/haarcascade_frontalface_default.xml")
     smile_detector = SmileDetector()
     smile_counter = SmileCounter()
+    start_time = int(strftime("%H%M", gmtime()))
+
     cap = cv2.VideoCapture(0)
-    writer = LibAVWriter("output.mp4")
+    if write_video:
+        writer = FFmpegWriter("output.mp4")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     tracker = Tracker()
     previous_frame = []
     current_frame = None
     frame_count = 0
-    cv2.namedWindow('frame', cv2.WINDOW_FREERATIO)
+    if display_flag:
+        cv2.namedWindow('frame', cv2.WINDOW_FREERATIO)
     _, frame = cap.read()
 
     # Select Area to track
-    roi = cv2.selectROI('frame', frame)
     while True:
+        current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        time_elapsed = int(strftime("%H%M", gmtime()))
+
         total_smile_counter = 0
         _, frame = cap.read()
         original = np.copy(frame)
-        frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
         # Set previous frame at the start
         if len(previous_frame) == 0:
@@ -83,7 +101,7 @@ def main():
             new_person.timestamp = frame_count
             person_counter.add(new_person)
 
-        if frame_count % 2 == 0:
+        if frame_count % (skip_frame+1) == 0:
             for people in person_counter.people:
                 if people.current:
                     bbox = people.bbox
@@ -109,7 +127,7 @@ def main():
         print bboxes
 
 
-        if frame_count % 10 == 0:
+        if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             df = pd.DataFrame()
             ids = []
             smile_count = []
@@ -131,17 +149,26 @@ def main():
             df["Timestamp"] = timestamp
 
             df.to_csv("output.csv", index=False)
+            if remote_upload:
+                data = open(os.path.join(dir_path, 'output.csv'), 'rb')
+                s3.Bucket('smile-log').put_object(
+                    Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+            break
+            break
         frame_count += 1
 
-        original[roi[1]: roi[3], roi[0]: roi[2]] = draw_frame
+        original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
 
-        cv2.imshow('frame', original)
-        writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-        writer.writeFrame(writer_image)
-        ch = 0xFF & cv2.waitKey(2)
-        if ch == 27:
-            break
+        if display_flag:
+            cv2.imshow('frame', original)
+            ch = 0xFF & cv2.waitKey(2)
+            if ch == 27:
+                break
+        if write_video:
+            writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+            writer.writeFrame(writer_image)
+
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         print "Inference time: {0} ms \n FPS: {1}".format(inf_time * 1000, 1/ inf_time)
 
