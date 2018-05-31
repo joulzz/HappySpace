@@ -47,92 +47,89 @@ def main():
     total_smile_counter = 0
     max_idx = 0
     while cap.isOpened():
-        try:
-            _, frame = cap.read()
-            original = np.copy(frame)
-            t0 = cv2.getTickCount()
-            # Set previous frame at the start
+        _, frame = cap.read()
+        original = np.copy(frame)
+        t0 = cv2.getTickCount()
+        # Set previous frame at the start
 
-            current_frame = frame
+        current_frame = frame
 
-            # Set frame for drawing purposes
-            draw_frame = np.copy(frame)
+        # Set frame for drawing purposes
+        draw_frame = np.copy(frame)
 
-            # Initialize face detection
-            face_detector.run_facedetector(current_frame, min_face, max_face)
-            current_frame_bboxes=[]
-            for face in face_detector.faces:
-                current_frame_bboxes.append(face)
+        # Initialize face detection
+        face_detector.run_facedetector(current_frame, min_face, max_face)
+        current_frame_bboxes=[]
+        for face in face_detector.faces:
+            current_frame_bboxes.append(face)
 
-            current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
-
-            for face in current_frame_bboxes:
-                cv2.rectangle(draw_frame, face[0], face[1], (255, 255, 255), 3)
-                new_person = People()
-                new_person.bbox = face
-                new_person.current = True
-                new_person.id = max_idx
-                new_person.timestamp = current_time
-                person_counter.add(new_person)
-                max_idx += 1
+        current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
 
-                if frame_count % (skip_frame +1) == 0:
-                    smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+        for face in current_frame_bboxes:
+            cv2.rectangle(draw_frame, face[0], face[1], (255, 255, 255), 3)
+            new_person = People()
+            new_person.bbox = face
+            new_person.current = True
+            new_person.id = max_idx
+            new_person.timestamp = current_time
+            person_counter.add(new_person)
+            max_idx += 1
 
-                    if smile_detector.predict():
-                        total_smile_counter += 1
-                        new_person.count += 1
-            inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
-            time_elapsed = int(strftime("%H%M", gmtime()))
-            if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time :
-                frame_count = 0
-                df = pd.DataFrame()
-                ids = []
-                smile_count = []
-                last_bbox = []
-                location_history = []
-                timestamp = []
-                for people in person_counter.people:
-                    people.history.append(people.bbox)
-                    ids.append(people.id)
-                    smile_count.append(people.count)
-                    last_bbox.append(people.bbox)
-                    location_history.append(people.history)
-                    timestamp.append(people.timestamp)
 
-                df["ID"] = ids
-                df["Smiles_Detected"] = smile_count
-                df["Last_Location"] = last_bbox
-                df["Location_History"] = location_history
-                df["Timestamp"] = timestamp
+            if frame_count % (skip_frame +1) == 0:
+                smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
 
-                df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
-                print("Wrote to CSV")
+                if smile_detector.predict():
+                    total_smile_counter += 1
+                    new_person.count += 1
+        inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
+        time_elapsed = int(strftime("%H%M", gmtime()))
+        if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time :
+            frame_count = 0
+            df = pd.DataFrame()
+            ids = []
+            smile_count = []
+            last_bbox = []
+            location_history = []
+            timestamp = []
+            for people in person_counter.people:
+                people.history.append(people.bbox)
+                ids.append(people.id)
+                smile_count.append(people.count)
+                last_bbox.append(people.bbox)
+                location_history.append(people.history)
+                timestamp.append(people.timestamp)
 
-                if remote_upload:
-                    data = open(os.path.join(dir_path, 'output.csv'), 'rb')
-                    s3.Bucket('smile-log').put_object(
-                        Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+            df["ID"] = ids
+            df["Smiles_Detected"] = smile_count
+            df["Last_Location"] = last_bbox
+            df["Location_History"] = location_history
+            df["Timestamp"] = timestamp
+
+            df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
+            print("Wrote to CSV")
+
+            if remote_upload:
+                data = open(os.path.join(dir_path, 'output.csv'), 'rb')
+                s3.Bucket('smile-log').put_object(
+                    Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+            break
+        frame_count += 1
+
+        original = draw_frame
+        cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+        if write_video:
+            writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+            writer.writeFrame(writer_image)
+        if display_flag:
+            cv2.imshow("preview",original)
+            ch = 0xFF & cv2.waitKey(2)
+            if ch == 27:
                 break
-            frame_count += 1
+        print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
+        gc.collect()
 
-            original = draw_frame
-            cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
-            if write_video:
-                writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-                writer.writeFrame(writer_image)
-            if display_flag:
-                cv2.imshow("preview",original)
-                ch = 0xFF & cv2.waitKey(2)
-                if ch == 27:
-                    break
-            print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
-            gc.collect()
-
-        except:
-            pass
     if write_video:
         writer.close()
 
