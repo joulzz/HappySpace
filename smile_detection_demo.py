@@ -122,7 +122,7 @@ def main():
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
-        if (time_elapsed - start_time)/100 > running_time:
+        if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
             df = pd.DataFrame()
             ids = []
