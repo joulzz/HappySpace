@@ -41,8 +41,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     frame_count = 0
     _, frame = cap.read()
-    smile_timestamps = []
-    smile_bboxes = []
+
     subprocess.check_output(["sudo", "swapoff","-a"])
     subprocess.check_output(["sudo", "swapon","-a"])
     total_smile_counter = 0
@@ -87,7 +86,7 @@ def main():
                         new_person.count += 1
             inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
             time_elapsed = int(strftime("%H%M", gmtime()))
-            if (time_elapsed - start_time) / 100 > running_time:
+            if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time :
                 frame_count = 0
                 df = pd.DataFrame()
                 ids = []
@@ -129,8 +128,7 @@ def main():
                 ch = 0xFF & cv2.waitKey(2)
                 if ch == 27:
                     break
-            print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, float(time_elapsed)/3600)
-            time_elapsed += inf_time
+            print "Inference time: {0} ms, FPS: {1}, Time Elapsed:{2} ".format(inf_time * 1000, 1/ inf_time, time_elapsed)
             gc.collect()
 
         except:
