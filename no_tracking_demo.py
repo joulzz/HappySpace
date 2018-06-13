@@ -67,7 +67,6 @@ def main():
 
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-
         for face in current_frame_bboxes:
             cv2.rectangle(draw_frame, face[0], face[1], (255, 255, 255), 3)
             new_person = People()
@@ -79,10 +78,13 @@ def main():
             max_idx += 1
 
             if frame_count % (skip_frame +1) == 0:
+
                 print "Sentiment Net Frame Run"
                 smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-
                 if smile_detector.predict():
+                    cv2.imwrite("{0}/{1}.jpg".format(os.path.join(dir_path, "images"), new_person.id),
+                                current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+
                     total_smile_counter += 1
                     new_person.count += 1
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()

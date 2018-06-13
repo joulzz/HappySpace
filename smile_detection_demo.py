@@ -102,7 +102,6 @@ def main():
         # person_counter.people is now updated to correspond to people in the current frame
 
         # if frame_count % 5 ==0:
-
         if frame_count % (skip_frame+1) == 0:
             print "Sentiment Net Run"
             for people in person_counter.people:
@@ -110,6 +109,10 @@ def main():
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     if smile_detector.predict():
+                        cv2.imwrite(
+                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "images"), people.id, people.count),
+                            current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+
                         people.count += 1
 
         for person in person_counter.people:
