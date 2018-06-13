@@ -12,3 +12,5 @@ Models/
 *.mp4
 
 aws_access_keys\.json
+
+images/
