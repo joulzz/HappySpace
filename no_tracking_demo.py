@@ -20,7 +20,7 @@ def main():
         return
     dir_path = os.path.dirname(os.path.abspath(__file__))
 
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
     # Keep track of time to store data into csv files
     start_time = int(strftime("%H%M", gmtime()))
     s3 = boto3.resource('s3')
@@ -82,7 +82,8 @@ def main():
                 print "Sentiment Net Frame Run"
                 smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                 if smile_detector.predict():
-                    cv2.imwrite("{0}/{1}.jpg".format(os.path.join(dir_path, "images"), new_person.id),
+                    if write_images:
+                        cv2.imwrite("{0}/{1}.jpg".format(os.path.join(dir_path, "images"), new_person.id),
                                 current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
 
                     total_smile_counter += 1

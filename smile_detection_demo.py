@@ -22,7 +22,7 @@ def main():
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
 
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
 
 
 
@@ -109,7 +109,8 @@ def main():
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     if smile_detector.predict():
-                        cv2.imwrite(
+                        if write_images:
+                            cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "images"), people.id, people.count),
                             current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
 

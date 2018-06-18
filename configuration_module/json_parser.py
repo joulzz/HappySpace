@@ -41,6 +41,10 @@ def json_parser(json_path):
         max_face = json_config["max_face"]
     else:
         max_face = []
+    if "write_images" in json_config:
+        write_images = json_config["write_images"]
+    else:
+        write_images = False
 
 
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face, write_images
