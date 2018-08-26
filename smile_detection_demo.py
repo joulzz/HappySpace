@@ -22,6 +22,8 @@ def main():
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
 
+
+    # Read parameters from JSON file. Refer to word document for parameter functions
     tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
 
 
@@ -46,8 +48,12 @@ def main():
     frame_count = 0
     _, frame = cap.read()
 
-    # subprocess.check_output(["sudo", "swapoff","-a"])
-    # subprocess.check_output(["sudo", "swapon","-a"])
+
+    # Comment if running on local machine, swapoff swapon required for tinkerboard
+    subprocess.check_output(["sudo", "swapoff","-a"])
+    subprocess.check_output(["sudo", "swapon","-a"])
+
+
     start_time = int(strftime("%H%M", gmtime()))
     inference_time_sum = 0
     average_fps = 0
@@ -79,17 +85,22 @@ def main():
                 previous_bbox = person.bbox
 
                 bbox_overlaps = []
+
+                # Add overlaps between previous bboxes and current bboxes to an array
                 for current_bbox in people_tracker.current_frame_bboxes:
                     overlap = tracker.iou_tracker(previous_bbox, current_bbox)
                     bbox_overlaps.append(overlap)
 
                 if len(bbox_overlaps) != 0:
+                    # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(person.bbox)
 
+
+        # Add unreplaced bboxes
         for bbox in people_tracker.current_frame_bboxes:
             max_idx = len(person_counter.people)
             new_person = People()
@@ -109,6 +120,8 @@ def main():
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     if smile_detector.predict():
+
+                        # Check flag to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "images"), people.id, people.count),
@@ -130,6 +143,8 @@ def main():
         time_elapsed = int(strftime("%H%M", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
+
+            # Write to CSV, Create different write parameters
             df = pd.DataFrame()
             ids = []
             smile_count = []
