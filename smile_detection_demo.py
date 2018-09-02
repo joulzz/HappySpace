@@ -13,6 +13,7 @@ from time import gmtime, strftime
 import sys
 import boto3
 import os
+from gps_module import read
 
 
 def main():
@@ -151,6 +152,7 @@ def main():
             last_bbox = []
             location_history = []
             timestamp = []
+            gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ids.append(people.id)
@@ -158,12 +160,14 @@ def main():
                 last_bbox.append(people.bbox)
                 location_history.append(people.history)
                 timestamp.append(people.timestamp)
+                gps_dd.append(read())
 
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
             df["Last_Location"] = last_bbox
             df["Location_History"] =location_history
             df["Timestamp"] = timestamp
+            df["GPS_DD"] = gps_dd
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
