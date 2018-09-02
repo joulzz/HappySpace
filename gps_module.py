@@ -1,7 +1,7 @@
 import serial
 
 
-def read():
+def read_gps_data():
     ser = serial.Serial('/dev/ttyUSB0', 4800, timeout=5)
     while True:
         line = ser.readline()
