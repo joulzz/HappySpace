@@ -31,3 +31,4 @@ class People:
         self.count = 0
         self.history = []
         self.timestamp = None
+        self.gps = None

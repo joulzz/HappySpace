@@ -95,6 +95,7 @@ def main():
                 if len(bbox_overlaps) != 0:
                     # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
+                        person.gps = read_gps_data()
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
@@ -109,6 +110,7 @@ def main():
             new_person.current = True
             new_person.id = max_idx
             new_person.timestamp = current_time
+            new_person.gps = read_gps_data()
             person_counter.add(new_person)
 
         # person_counter.people is now updated to correspond to people in the current frame
@@ -160,7 +162,7 @@ def main():
                 last_bbox.append(people.bbox)
                 location_history.append(people.history)
                 timestamp.append(people.timestamp)
-                gps_dd.append(read_gps_data())
+                gps_dd.append(people.gps)
 
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
