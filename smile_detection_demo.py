@@ -13,7 +13,7 @@ from time import gmtime, strftime
 import sys
 import boto3
 import os
-from gps_module import read
+from gps_module import read_gps_data
 
 
 def main():
@@ -160,7 +160,7 @@ def main():
                 last_bbox.append(people.bbox)
                 location_history.append(people.history)
                 timestamp.append(people.timestamp)
-                gps_dd.append(read())
+                gps_dd.append(read_gps_data())
 
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
