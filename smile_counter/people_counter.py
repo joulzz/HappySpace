@@ -32,3 +32,4 @@ class People:
         self.history = []
         self.timestamp = None
         self.gps = None
+        self.non_smiles = 0
