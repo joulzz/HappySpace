@@ -122,15 +122,29 @@ def main():
                 if people.current:
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                    if smile_detector.predict():
 
-                        # Check flag to then save images to the images folder in current directory
+                    # Add directory for smiles and non-smiles if they don't exist
+                    if not os.path.exists('smile_images'):
+                        os.makedirs('smile_images')
+                    if not os.path.exists('non_smiles_images'):
+                        os.makedirs('non_smiles_images')
+
+                    # Classify and save as smiles and non-smiles
+                    if smile_detector.predict():
+                        # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
-                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "images"), people.id, people.count),
-                            current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-
+                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count),
+                            current_frame[face[0][1]+int((face[1][1]-face[0][1])*(2/3.0)): face[1][1], face[0][0]: face[1][0]])
                         people.count += 1
+                    else:
+                        if write_images:
+                            cv2.imwrite(
+                                "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles),
+                                current_frame[face[0][1] + int((face[1][1] - face[0][1])*(2/3.0)): face[1][1],
+                                face[0][0]: face[1][0]])
+                        people.non_smiles += 1
+
 
         for person in person_counter.people:
             total_smile_counter += person.count
