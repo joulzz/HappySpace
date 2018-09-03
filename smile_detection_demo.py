@@ -95,7 +95,7 @@ def main():
                 if len(bbox_overlaps) != 0:
                     # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
-                        person.gps = read_gps_data()
+                        # person.gps = read_gps_data()
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
