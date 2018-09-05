@@ -135,14 +135,15 @@ def main():
                         if write_images:
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count),
-                            current_frame[face[0][1]+int((face[1][1]-face[0][1])*(2/3.0)): face[1][1], face[0][0]: face[1][0]])
+                            current_frame[face[0][1]+int((face[1][1]-face[0][1])*(2/5.0)): face[1][1], face[0][0]: face[1][0]])
                         people.count += 1
                     else:
                         if write_images:
-                            cv2.imwrite(
-                                "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles),
-                                current_frame[face[0][1] + int((face[1][1] - face[0][1])*(2/3.0)): face[1][1],
-                                face[0][0]: face[1][0]])
+                            if people.non_smiles == 0:
+                                cv2.imwrite(
+                                    "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles),
+                                    current_frame[face[0][1] + int((face[1][1] - face[0][1])*(2/5.0)): face[1][1],
+                                    face[0][0]: face[1][0]])
                         people.non_smiles += 1
 
 
