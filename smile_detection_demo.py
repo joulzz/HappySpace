@@ -14,7 +14,8 @@ import sys
 import boto3
 import os
 from gps_module import read_gps_data
-
+from bicolor_led import smiling_face,straight_face,colour_gauge
+from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
     dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -56,6 +57,7 @@ def main():
 
 
     start_time = int(strftime("%H%M", gmtime()))
+    start_time_seconds = int(strftime("%S",gmtime()))
     inference_time_sum = 0
     average_fps = 0
     while cap.isOpened():
@@ -96,6 +98,8 @@ def main():
                     # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
                         # person.gps = read_gps_data()
+                        # Displaying straight face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        straight_face(BicolorMatrix8x8.YELLOW)
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
@@ -111,6 +115,7 @@ def main():
             new_person.id = max_idx
             new_person.timestamp = current_time
             new_person.gps = read_gps_data()
+            straight_face(BicolorMatrix8x8.YELLOW)
             person_counter.add(new_person)
 
         # person_counter.people is now updated to correspond to people in the current frame
@@ -137,6 +142,9 @@ def main():
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count),
                             current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]])
                         people.count += 1
+                        # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        smiling_face(BicolorMatrix8x8.GREEN)
+
                     else:
                         if write_images:
                             if people.non_smiles == 0:
@@ -159,6 +167,7 @@ def main():
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
+        time_elapsed_seconds = int(strftime("%S", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
 
@@ -199,6 +208,10 @@ def main():
 
         original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+        seconds_elapsed= int(time_elapsed_seconds - start_time_seconds)
+        # Displaying Colour Gauge
+        colour_gauge(total_smile_counter, seconds_elapsed)
+
         if display_flag:
             cv2.imshow('frame', original)
             ch = 0xFF & cv2.waitKey(2)
