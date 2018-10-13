@@ -9,11 +9,11 @@ from skvideo.io import FFmpegWriter
 import gc
 import subprocess
 from configuration_module.json_parser import json_parser
-from time import gmtime, strftime
+from time import gmtime, strftime, time
 import sys
 import boto3
 import os
-from gps_module import read_gps_data
+# from gps_module import read_gps_data
 from bicolor_led import smiling_face,straight_face,colour_gauge
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
@@ -57,9 +57,11 @@ def main():
 
 
     start_time = int(strftime("%H%M", gmtime()))
-    start_time_seconds = int(strftime("%S",gmtime()))
+    start_time_seconds = time()
     inference_time_sum = 0
     average_fps = 0
+    time_smile = 0
+    time_straight = 0
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
@@ -98,8 +100,6 @@ def main():
                     # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
                         # person.gps = read_gps_data()
-                        # Displaying straight face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                        straight_face(BicolorMatrix8x8.YELLOW)
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
@@ -114,8 +114,8 @@ def main():
             new_person.current = True
             new_person.id = max_idx
             new_person.timestamp = current_time
-            new_person.gps = read_gps_data()
-            straight_face(BicolorMatrix8x8.YELLOW)
+            # Uncomment to log GPS functionality
+            # new_person.gps = read_gps_data()
             person_counter.add(new_person)
 
         # person_counter.people is now updated to correspond to people in the current frame
@@ -125,9 +125,12 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
+                    time_straight = int(time())
+                    if time_smile == 0 or abs(int(time_smile - time_straight))>3:
+                        # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        straight_face(BicolorMatrix8x8.YELLOW)
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-
                     # Add directory for smiles and non-smiles if they don't exist
                     if not os.path.exists('smile_images'):
                         os.makedirs('smile_images')
@@ -144,7 +147,7 @@ def main():
                         people.count += 1
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         smiling_face(BicolorMatrix8x8.GREEN)
-
+                        time_smile = int(time())
                     else:
                         if write_images:
                             if people.non_smiles == 0:
@@ -167,7 +170,6 @@ def main():
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
-        time_elapsed_seconds = int(strftime("%S", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
 
@@ -178,7 +180,8 @@ def main():
             last_bbox = []
             location_history = []
             timestamp = []
-            gps_dd = []
+            # Uncomment to log GPS functionality
+            # gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ids.append(people.id)
@@ -186,14 +189,15 @@ def main():
                 last_bbox.append(people.bbox)
                 location_history.append(people.history)
                 timestamp.append(people.timestamp)
-                gps_dd.append(people.gps)
+                # Uncomment to log GPS functionality
+                # gps_dd.append(people.gps)
 
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
             df["Last_Location"] = last_bbox
             df["Location_History"] =location_history
             df["Timestamp"] = timestamp
-            df["GPS_DD"] = gps_dd
+            # df["GPS_DD"] = gps_dd
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
@@ -208,10 +212,15 @@ def main():
 
         original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
-        seconds_elapsed= int(time_elapsed_seconds - start_time_seconds)
-        # Displaying Colour Gauge
-        colour_gauge(total_smile_counter, seconds_elapsed)
 
+        time_elapsed_seconds = int(time() - start_time_seconds)
+        time_gauge = int(time())
+        # print str(time_elapsed_seconds) +" "+str(time_smile)+" "+str(time_straight)+" "+str(time_gauge)
+        # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
+        # Displaying Colour Gauge
+        if (abs(int(time_straight - time_gauge))>10 and time_straight !=0) or (abs(int(time_smile - time_gauge))>10 and time_smile!=0):
+            if time_elapsed_seconds % 2 == 0:
+                colour_gauge(total_smile_counter, time_elapsed_seconds)
         if display_flag:
             cv2.imshow('frame', original)
             ch = 0xFF & cv2.waitKey(2)
