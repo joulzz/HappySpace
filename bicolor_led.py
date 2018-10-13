@@ -4,20 +4,6 @@ from PIL import ImageDraw
 
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
-def smiling_face(color):
-    display = BicolorMatrix8x8.BicolorMatrix8x8()
-    display.begin()
-
-    print "Smiley Face - Green"
-
-    x_coordinates = [0,0,0,0,1,1,2,2,2,2,3,3,4,4,4,4,5,5,5,5,6,6,7,7,7,7]
-    y_cooordinates = [2,3,4,5,1,6,0,2,5,7,0,7,0,2,5,7,0,3,4,7,1,6,2,3,4,5]
-
-    for x,y in zip(x_coordinates,y_cooordinates):
-        display.set_pixel(x, y,color)
-        display.write_display()
-    # time.sleep(3)
-
 def straight_face(color):
     print "Straight face - Yellow"
     display = BicolorMatrix8x8.BicolorMatrix8x8()
@@ -31,7 +17,21 @@ def straight_face(color):
     for x,y in zip(x_coordinates_straight,y_cooordinates_straight):
         display.set_pixel(x, y, color)
         display.write_display()
-    # time.sleep(3)
+    time.sleep(1)
+
+def smiling_face(color):
+    display = BicolorMatrix8x8.BicolorMatrix8x8()
+    display.begin()
+
+    print "Smiley Face - Green"
+
+    x_coordinates = [0,0,0,0,1,1,2,2,2,2,3,3,4,4,4,4,5,5,5,5,6,6,7,7,7,7]
+    y_cooordinates = [2,3,4,5,1,6,0,2,5,7,0,7,0,2,5,7,0,3,4,7,1,6,2,3,4,5]
+
+    for x,y in zip(x_coordinates,y_cooordinates):
+        display.set_pixel(x, y,color)
+        display.write_display()
+    time.sleep(2)
 
 def colour_gauge(smile_count,seconds_elapsed):
     print "Colour Gauge"
@@ -88,6 +88,7 @@ def colour_gauge(smile_count,seconds_elapsed):
 
     display.clear()
     display.set_image(display.create_blank_image())
+    display.write_display()
 
     if seconds_elapsed%10 == 0:
         scrollable = display.horizontal_scroll(image)
