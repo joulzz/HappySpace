@@ -17,7 +17,7 @@ def straight_face(color):
     for x,y in zip(x_coordinates_straight,y_cooordinates_straight):
         display.set_pixel(x, y, color)
         display.write_display()
-    # time.sleep(1)
+    time.sleep(0.1)
 
 def smiling_face(color):
     display = BicolorMatrix8x8.BicolorMatrix8x8()
@@ -31,7 +31,7 @@ def smiling_face(color):
     for x,y in zip(x_coordinates,y_cooordinates):
         display.set_pixel(x, y,color)
         display.write_display()
-    # time.sleep(2)
+    time.sleep(0.3)
 
 def colour_gauge(smile_count,seconds_elapsed):
     print "Colour Gauge"
@@ -49,7 +49,7 @@ def colour_gauge(smile_count,seconds_elapsed):
         y_cooordinates_gauge =[2, 3, 4, 5, 1, 6, 0, 7, 0, 7, 0, 7, 0, 7, 1, 6, 2, 3, 4, 5]
 
         for x, y in zip(x_coordinates_gauge, y_cooordinates_gauge):
-            draw.point((x,y),fill=(0,255,0))
+            draw.point((x,y),fill=(255,0,0))
 
     # time.sleep(1)
 
