@@ -125,10 +125,10 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
-                    # time_straight = int(time())
-                    # if time_smile == 0 or abs(int(time_smile - time_straight))>3:
-                    #     # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                    #     straight_face(BicolorMatrix8x8.YELLOW)
+                    time_straight = int(time())
+                    if time_smile == 0 or abs(int(time_smile - time_straight))>1:
+                        # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        straight_face(BicolorMatrix8x8.YELLOW)
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -218,7 +218,7 @@ def main():
         # print str(time_elapsed_seconds) +" "+str(time_smile)+" "+str(time_straight)+" "+str(time_gauge)
         # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
         # Displaying Colour Gauge
-        if (abs(int(time_smile - time_gauge))>10 and time_smile!=0):
+        if (abs(int(time_straight - time_gauge))>10 and time_straight!=0) and (abs(int(time_smile - time_gauge))>10 and time_smile!=0):
             if time_elapsed_seconds % 2 == 0:
                 colour_gauge(total_smile_counter, time_elapsed_seconds)
         if display_flag:
