@@ -17,7 +17,7 @@ def straight_face(color):
     for x,y in zip(x_coordinates_straight,y_cooordinates_straight):
         display.set_pixel(x, y, color)
         display.write_display()
-    time.sleep(0.1)
+    # time.sleep(0.1)
 
 def smiling_face(color):
     display = BicolorMatrix8x8.BicolorMatrix8x8()
@@ -31,7 +31,7 @@ def smiling_face(color):
     for x,y in zip(x_coordinates,y_cooordinates):
         display.set_pixel(x, y,color)
         display.write_display()
-    time.sleep(0.3)
+    # time.sleep(0.3)
 
 def colour_gauge(smile_count,seconds_elapsed):
     print "Colour Gauge"
@@ -39,6 +39,8 @@ def colour_gauge(smile_count,seconds_elapsed):
     display.begin()
 
     display.clear()
+    display.set_image(display.create_blank_image())
+    display.write_display()
 
     image = Image.new('RGB', (8, 8))
     draw = ImageDraw.Draw(image)
@@ -86,10 +88,8 @@ def colour_gauge(smile_count,seconds_elapsed):
     display.set_image(image)
     display.write_display()
 
-    display.clear()
-    display.set_image(display.create_blank_image())
-    display.write_display()
 
-    if seconds_elapsed%10 == 0:
-        scrollable = display.horizontal_scroll(image)
-        display.animate(scrollable)
+    # Scroll functionality
+    # if seconds_elapsed%10 == 0:
+    #     scrollable = display.horizontal_scroll(image)
+    #     display.animate(scrollable)
