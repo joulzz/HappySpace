@@ -60,8 +60,7 @@ def main():
     start_time_seconds = time()
     inference_time_sum = 0
     average_fps = 0
-    time_smile = 0
-    time_straight = 0
+    time_face = 0
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
@@ -125,10 +124,6 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
-                    time_straight = int(time())
-                    if time_smile == 0 or abs(int(time_smile - time_straight))>1:
-                        # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                        straight_face(BicolorMatrix8x8.YELLOW)
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -139,15 +134,14 @@ def main():
 
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict():
+                        # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        smiling_face(BicolorMatrix8x8.GREEN)
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count),
                             current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]])
                         people.count += 1
-                        # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                        smiling_face(BicolorMatrix8x8.GREEN)
-                        time_smile = int(time())
                     else:
                         if write_images:
                             if people.non_smiles == 0:
@@ -155,8 +149,11 @@ def main():
                                     "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles),
                                     current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1],
                                     face[0][0]: face[1][0]])
+                        time_straight = int(time())
+                        # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+                        straight_face(BicolorMatrix8x8.YELLOW)
                         people.non_smiles += 1
-
+                    time_face = int(time())
 
         for person in person_counter.people:
             total_smile_counter += person.count
@@ -218,7 +215,7 @@ def main():
         # print str(time_elapsed_seconds) +" "+str(time_smile)+" "+str(time_straight)+" "+str(time_gauge)
         # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
         # Displaying Colour Gauge
-        if (abs(int(time_straight - time_gauge))>10 and time_straight!=0) and (abs(int(time_smile - time_gauge))>10 and time_smile!=0):
+        if abs(int(time_face - time_gauge))>5 and time_face!=0:
             if time_elapsed_seconds % 2 == 0:
                 colour_gauge(total_smile_counter, time_elapsed_seconds)
         if display_flag:
