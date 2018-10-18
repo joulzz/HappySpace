@@ -51,7 +51,7 @@ def colour_gauge(smile_count,seconds_elapsed):
         y_cooordinates_gauge =[2, 3, 4, 5, 1, 6, 0, 7, 0, 7, 0, 7, 0, 7, 1, 6, 2, 3, 4, 5]
 
         for x, y in zip(x_coordinates_gauge, y_cooordinates_gauge):
-            draw.point((x,y),fill=(255,0,0))
+            draw.point((x,y),fill=(0,255,0))
 
     # time.sleep(1)
 
