@@ -48,7 +48,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     previous_frame = []
     frame_count = 0
-    _, frame = cap.read()
+    # _, frame = cap.read()
 
 
     # Comment if running on local machine, swapoff swapon required for tinkerboard
@@ -64,6 +64,7 @@ def main():
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
+        frame = np.array(frame, dtype=np.uint8)
         original = np.copy(frame)
         # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
@@ -76,6 +77,7 @@ def main():
         draw_frame = np.copy(frame)
 
         # Initialize face detection
+        print(np.shape(current_frame),current_frame.dtype)
         face_detector.run_facedetector(current_frame, min_face, max_face)
         people_tracker.current_frame_bboxes = face_detector.faces
 
