@@ -77,7 +77,7 @@ def main():
         draw_frame = np.copy(frame)
 
         # Initialize face detection
-        print(np.shape(current_frame),current_frame.dtype)
+        # print(np.shape(current_frame),current_frame.dtype)
         face_detector.run_facedetector(current_frame, min_face, max_face)
         people_tracker.current_frame_bboxes = face_detector.faces
 
