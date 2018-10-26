@@ -28,7 +28,7 @@ class People:
         self.id = 0
         self.current = False
         self.bbox = []
-        self.count = 0
+        self.count = None
         self.history = []
         self.timestamp = None
         self.gps = None

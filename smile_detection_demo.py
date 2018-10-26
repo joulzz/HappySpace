@@ -134,6 +134,8 @@ def main():
                     if not os.path.exists('non_smiles_images'):
                         os.makedirs('non_smiles_images')
 
+                    if people.count == None:
+                        people.count = 0
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
@@ -158,7 +160,8 @@ def main():
                     time_face = int(time())
 
         for person in person_counter.people:
-            total_smile_counter += person.count
+            if person.count != None:
+                total_smile_counter += person.count
             # state.append(person.current)
             # bboxes.append(person.bbox)
             if person.current:
