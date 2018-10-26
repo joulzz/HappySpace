@@ -19,7 +19,7 @@ from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
     print("Disconnecting via sakis3g (Main)")
-    subprocess.check_output(['sudo /usr/bin/modem3g/sakis3g disconnect'])
+    subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','disconnect'])
     time.sleep(10)
     dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -207,7 +207,7 @@ def main():
 
             if remote_upload:
                 print("Connecting via sakis3g (Main)")
-                subprocess.check_output(['sudo /usr/bin/modem3g/sakis3g connect'])
+                subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','connect'])
                 time.sleep(10)
                 data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                 s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
