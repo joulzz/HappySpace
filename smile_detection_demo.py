@@ -214,6 +214,14 @@ def main():
                 sleep(10)
                 data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                 s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
+
+                if os.path.exists('smile_images'):
+                    image_path = os.path.join(dir_path, "smile_images")
+                    for subdir, dirs, files in os.walk(image_path):
+                        for file in files:
+                            full_path = os.path.join(subdir, file)
+                            with open(full_path, 'rb') as data:
+                                s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id,full_path[len(image_path) + 1:]), Body=data)
             break
 
         frame_count += 1
