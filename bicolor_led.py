@@ -33,6 +33,39 @@ def smiling_face(color):
         display.write_display()
     # time.sleep(0.3)
 
+def colour_gauge_update(smile_count):
+    print "Colour Gauge"
+    display = BicolorMatrix8x8.BicolorMatrix8x8()
+    display.begin()
+
+    #Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+    if 0 < smile_count <= 6 or smile_count > 0:
+        display.set_pixel(7, 7, BicolorMatrix8x8.RED)
+
+    if 7 < smile_count <= 12 or smile_count > 7:
+        display.set_pixel(7, 6, BicolorMatrix8x8.RED)
+
+    if 13 < smile_count <= 18 or smile_count > 13:
+        display.set_pixel(7, 5, BicolorMatrix8x8.YELLOW)
+
+    if 19 < smile_count <= 24 or smile_count > 19:
+        display.set_pixel(7, 4, BicolorMatrix8x8.YELLOW)
+
+    if 25 < smile_count <= 30 or smile_count > 25:
+        display.set_pixel(7, 3, BicolorMatrix8x8.YELLOW)
+
+    if 31 < smile_count <= 36 or smile_count > 31:
+        display.set_pixel(7, 2, BicolorMatrix8x8.GREEN)
+
+    if 37 < smile_count <= 42 or smile_count > 37:
+        display.set_pixel(7, 1, BicolorMatrix8x8.GREEN)
+
+    if smile_count > 42:
+        display.set_pixel(7, 0, BicolorMatrix8x8.GREEN)
+
+    display.write_display()
+
+
 def colour_gauge(smile_count,seconds_elapsed):
     print "Colour Gauge"
     display = BicolorMatrix8x8.BicolorMatrix8x8()

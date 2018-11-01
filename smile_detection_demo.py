@@ -14,7 +14,7 @@ import sys
 import boto3
 import os
 # from gps_module import read_gps_data
-from bicolor_led import smiling_face,straight_face,colour_gauge
+from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
@@ -226,9 +226,11 @@ def main():
         # print str(time_elapsed_seconds) +" "+str(time_smile)+" "+str(time_straight)+" "+str(time_gauge)
         # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
         # Displaying Colour Gauge
-        if abs(int(time_face - time_gauge))>5 and time_face!=0:
-            if time_elapsed_seconds % 2 == 0:
-                colour_gauge(total_smile_counter, time_elapsed_seconds)
+
+        if abs(int(time_face - time_gauge)) > 5 and time_face != 0:
+            if int(time_elapsed - start_time) % 60:
+                colour_gauge_update(total_smile_counter)
+
         if display_flag:
             cv2.imshow('frame', original)
             ch = 0xFF & cv2.waitKey(2)
