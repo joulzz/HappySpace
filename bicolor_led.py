@@ -37,6 +37,7 @@ def colour_gauge_update(smile_count):
     print "Colour Gauge"
     display = BicolorMatrix8x8.BicolorMatrix8x8()
     display.begin()
+    display.clear()
 
     #Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
     if 0 < smile_count <= 6 or smile_count > 0:
