@@ -4,6 +4,7 @@
   "display": 1,
   "write_video":0,
   "remote_upload": 0,
+  "dongle_connection": 0,
   "min_face": [30, 30],
   "max_face": [400, 400],
   "running_time": 8,

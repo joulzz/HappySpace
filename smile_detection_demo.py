@@ -18,9 +18,7 @@ from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_upd
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
-    print("Disconnecting via sakis3g (Main)")
-    subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','disconnect'])
-    sleep(10)
+
     dir_path = os.path.dirname(os.path.abspath(__file__))
 
     if len(sys.argv)!= 2:
@@ -29,9 +27,12 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
 
-
+    if dongle_connection:
+        print("Disconnecting via sakis3g (Main)")
+        subprocess.check_output(['sudo', '/usr/bin/modem3g/sakis3g', 'disconnect'])
+        sleep(10)
 
     # Create instances of required class objects
     people_tracker = PeopleTracker()
@@ -209,9 +210,10 @@ def main():
 
 
             if remote_upload:
-                print("Connecting via sakis3g (Main)")
-                subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','connect'])
-                sleep(10)
+                if dongle_connection:
+                    print("Connecting via sakis3g (Main)")
+                    subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','connect'])
+                    sleep(10)
                 data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                 s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
 
