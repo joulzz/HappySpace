@@ -242,11 +242,12 @@ def main():
         time_gauge = int(time())
         # print str(time_elapsed_seconds) +" "+str(time_smile)+" "+str(time_straight)+" "+str(time_gauge)
         # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
-        # Displaying Colour Gauge
 
-        if abs(int(time_face - time_gauge)) > 5 and time_face != 0:
-            if int(time_elapsed - start_time) % 60:
-                colour_gauge_update(total_smile_counter)
+        # Displaying Colour Gauge
+        if abs(int(time_gauge - time_face)) % 3600 == 0 and time_face != 0:
+            print("Color Gauge")
+            colour_gauge_update(total_smile_counter)
+
 
         if display_flag:
             cv2.imshow('frame', original)
