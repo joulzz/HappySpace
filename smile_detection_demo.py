@@ -245,8 +245,8 @@ def main():
         # Displaying Colour Gauge
 
         if abs(int(time_face - time_gauge)) > 5 and time_face != 0:
-            if int(time_elapsed - start_time) % 60:
-                colour_gauge_update(total_smile_counter)
+            if time_elapsed_seconds % 10 == 0:
+                colour_gauge(total_smile_counter,time_elapsed_seconds)
 
         if display_flag:
             cv2.imshow('frame', original)
