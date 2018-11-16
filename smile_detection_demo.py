@@ -210,10 +210,12 @@ def main():
 
 
             if remote_upload:
+                
                 if dongle_connection:
                     print("Connecting via sakis3g (Main)")
                     subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','connect'])
                     sleep(10)
+
                 data = open(os.path.join(dir_path, 'output.csv'), 'rb')
                 s3.Bucket('smile-log').put_object(Key='{0}/{1}.csv'.format(tinkerboard_id, strftime("%Y-%m-%d", gmtime())), Body=data)
 
