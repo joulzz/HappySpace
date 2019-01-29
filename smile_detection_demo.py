@@ -75,6 +75,13 @@ def main():
         # Set previous frame at the start
         if len(previous_frame) == 0:
             previous_frame = np.copy(frame)
+        #1
+        # frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=100)
+
+        #2 Histogram Equalization
+        img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
+        frame = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
         current_frame = frame
 
         # Set frame for drawing purposes
