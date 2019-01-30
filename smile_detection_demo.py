@@ -13,9 +13,10 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
+from blinkstick import blinkstick
 # from gps_module import read_gps_data
-from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
-from Adafruit_LED_Backpack import BicolorMatrix8x8
+# from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
+# from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
 
@@ -65,6 +66,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
+    led = blinkstick.find_first()
+    led.set_mode(3)
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
@@ -79,9 +82,9 @@ def main():
         # frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=100)
 
         #2 Histogram Equalization
-        img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
-        frame = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
+        # img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
+        # frame = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
         current_frame = frame
 
         # Set frame for drawing purposes
@@ -137,6 +140,7 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
+                    led.set_color(name="yellow")
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -150,7 +154,8 @@ def main():
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                        smiling_face(BicolorMatrix8x8.GREEN)
+                        # smiling_face(BicolorMatrix8x8.GREEN)
+                        led.set_color(name="green")
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
@@ -166,7 +171,7 @@ def main():
                                     face[0][0]: face[1][0]])
                         time_straight = int(time())
                         # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
-                        straight_face(BicolorMatrix8x8.YELLOW)
+                        # straight_face(BicolorMatrix8x8.YELLOW)
                         people.non_smiles += 1
                     time_face = int(time())
 
@@ -257,7 +262,7 @@ def main():
         # Displaying Colour Gauge
         if abs(int(time_gauge - time_face)) % 3600 == 0 and time_face != 0:
             print("Color Gauge")
-            colour_gauge_update(total_smile_counter)
+            # colour_gauge_update(total_smile_counter)
 
 
         if display_flag:
