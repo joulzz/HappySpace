@@ -190,7 +190,7 @@ def main():
         time_elapsed = int(strftime("%H%M", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
-
+            led.turn_off()
             # Write to CSV, Create different write parameters
             df = pd.DataFrame()
             ids = []
