@@ -140,7 +140,7 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
-                    led.set_color(name="yellow")
+                    led.blink(name="yellow")
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -155,7 +155,7 @@ def main():
                     if smile_detector.predict():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
-                        led.set_color(name="green")
+                        led.blink(name="green")
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
@@ -190,7 +190,6 @@ def main():
         time_elapsed = int(strftime("%H%M", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
             frame_count = 0
-            led.turn_off()
             # Write to CSV, Create different write parameters
             df = pd.DataFrame()
             ids = []
