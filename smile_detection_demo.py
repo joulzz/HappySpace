@@ -13,7 +13,7 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
-from blinkstick import blinkstick
+# from blinkstick import blinkstick
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -57,8 +57,8 @@ def main():
 
 
     # Comment if running on local machine, swapoff swapon required for tinkerboard
-    subprocess.check_output(["sudo", "swapoff","-a"])
-    subprocess.check_output(["sudo", "swapon","-a"])
+    # subprocess.check_output(["sudo", "swapoff","-a"])
+    # subprocess.check_output(["sudo", "swapon","-a"])
 
 
     start_time = int(strftime("%H%M", gmtime()))
@@ -66,8 +66,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    led = blinkstick.find_first()
-    led.set_mode(3)
+    # led = blinkstick.find_first()
+    # led.set_mode(3)
     while cap.isOpened():
         total_smile_counter = 0
         _, frame = cap.read()
@@ -140,7 +140,7 @@ def main():
             print "Sentiment Net Run"
             for people in person_counter.people:
                 if people.current:
-                    led.blink(name="yellow")
+                    # led.blink(name="yellow")
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -155,7 +155,7 @@ def main():
                     if smile_detector.predict():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
-                        led.blink(name="green")
+                        # led.blink(name="green")
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
