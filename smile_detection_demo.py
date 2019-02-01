@@ -142,7 +142,7 @@ def main():
             for people in person_counter.people:
                 if people.current:
                     # led.blink(name="yellow")
-                    subprocess.check_output(['sudo', 'blinkstick', '--repeats', '2','--blink','yellow'])
+                    subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
                     smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # Add directory for smiles and non-smiles if they don't exist
@@ -158,7 +158,7 @@ def main():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
                         # led.blink(name="green")
-                        subprocess.check_output(['sudo', 'blinkstick', '--repeats', '2', '--blink', 'green'])
+                        subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
                             cv2.imwrite(
