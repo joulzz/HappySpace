@@ -1,7 +1,7 @@
 {
   "tinkerboard_ID": "Nkdoo-Mark-II",
-  "skip_frames": 3,
-  "display": 1,
+  "skip_frames": 0,
+  "display": 0,
   "write_video":0,
   "remote_upload": 0,
   "dongle_connection": 0,
