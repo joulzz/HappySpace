@@ -13,8 +13,6 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
-import sys
-sys.path.append("/usr/lib/python2.7")
 from blinkstick import blinkstick
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
