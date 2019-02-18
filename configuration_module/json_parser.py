@@ -10,8 +10,8 @@ def json_parser(json_path):
     else:
         tinkerboard_id = "Default"
 
-    if "skip_frame" in json_config:
-        skip_frame = json_config["skip_frame"]
+    if "skip_frames" in json_config:
+        skip_frame = json_config["skip_frames"]
     else:
         skip_frame = 0
 
@@ -29,18 +29,31 @@ def json_parser(json_path):
         remote_upload = json_config["remote_upload"]
     else:
         remote_upload = False
+
+    if "dongle_connection" in json_config:
+        dongle_connection = json_config["dongle_connection"]
+    else:
+        dongle_connection = False
+
     if "running_time" in json_config:
         running_time = json_config["running_time"]
     else:
         running_time = 8
+
     if "min_face" in json_config:
         min_face = json_config["min_face"]
     else:
         min_face = [30, 30]
+
     if "max_face" in json_config:
         max_face = json_config["max_face"]
     else:
         max_face = []
 
+    if "write_images" in json_config:
+        write_images = json_config["write_images"]
+    else:
+        write_images = False
 
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, running_time, min_face, max_face
+
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images

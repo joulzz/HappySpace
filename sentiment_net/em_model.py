@@ -1,15 +1,9 @@
 from __future__ import division, absolute_import
-import re
-import numpy as np
 import tflearn
-from tflearn.layers.core import input_data, dropout, fully_connected, flatten
-from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
-from tflearn.layers.merge_ops import merge
-from tflearn.layers.normalization import local_response_normalization
+from tflearn.layers.core import input_data, dropout, fully_connected
+from tflearn.layers.conv import conv_2d, max_pool_2d
 from tflearn.layers.estimator import regression
-from os.path import isfile, join
-import random
-import sys
+from os.path import isfile
 
 
 
@@ -64,6 +58,8 @@ class EMR:
     Loads pre-trained model.
     model.load() is an inbuilt function in tflearn
     """
+
+    print("Model Path: {0}".format(self.path))
     if isfile("{0}.meta".format(self.path)):
       self.model.load("{0}".format(self.path))
       print('\n---> Pre-trained model loaded')
