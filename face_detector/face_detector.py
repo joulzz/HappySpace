@@ -35,7 +35,7 @@ class FaceDetection:
         self.exec_net.start_async(request_id=request_id, inputs={self.input_blob: self.images})
 
     def awaitResults(self, request_id, frame):
-        if self.exec_net.requests[self.request_id].wait(-1) == 0:
+        if self.exec_net.requests[request_id].wait(-1) == 0:
             res = self.exec_net.requests[request_id].outputs[self.out_blob]
             face_images_array = []
             coordinates_array = []
