@@ -170,7 +170,7 @@ def main():
 
         # if frame_count % 5 ==0:
         if frame_count % (skip_frame+1) == 0:
-            print "Sentiment Net Run"
+            print("Sentiment Net Run")
             for people in person_counter.people:
                 if people.current:
                     led.blink(name="yellow")
