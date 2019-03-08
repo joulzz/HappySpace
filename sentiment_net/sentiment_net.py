@@ -26,11 +26,7 @@ class SmileDetector:
 
     def preprocess_image(self, face):
         if face.shape[:-1] != (self.emo_size[2], self.emo_size[3]):
-            try:
-                face_frame = cv2.resize(face, (self.emo_size[3], self.emo_size[2]))
-            except:
-                print("Exception Raised in Resizing Image")
-                return 0
+            face_frame = cv2.resize(face, (self.emo_size[3], self.emo_size[2]))
 
         face_frame = face_frame.transpose((2, 0, 1))  # Change data layout from HWC to CHW
         return face_frame
