@@ -53,7 +53,7 @@ class FaceDetection:
                 if confidence > 0.5:
                     cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), color=(0, 255, 0), thickness=2)
                     face = frame[ymin:ymax, xmin:xmax]
-                    self.faces.append([xmin, xmax, ymin, ymax])
+                    self.faces.append([(xmin, ymin), (xmax, ymax)])
                     print("Face Detection Confidence:", confidence)
 
         return True

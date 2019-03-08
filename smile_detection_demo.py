@@ -179,7 +179,7 @@ def main():
                     # led.blink(name="yellow")
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
-                    face_frame= smile_detector.preprocess_image(frame[face[1]:face[3],face[0]:face[2]])
+                    face_frame= smile_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     if face_frame == False:
                         continue
 
