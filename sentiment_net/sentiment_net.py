@@ -1,7 +1,6 @@
-from em_model import EMR
+
 import cv2
 import numpy as np
-from sklearn.externals import joblib
 import os
 from openvino.inference_engine import IENetwork
 
