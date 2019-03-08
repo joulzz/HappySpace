@@ -11,14 +11,14 @@ class FaceDetection:
 
         # Create networks
         self.net = IENetwork(model=model_xml, weights=model_bin)
-        log.info("Preparing input blobs")
+        print("Preparing input blobs")
         self.input_blob = next(iter(self.net.inputs))
         self.out_blob = next(iter(self.net.outputs))
 
         # Read and pre-process input images
         self.size = self.net.inputs[self.input_blob].shape
 
-        log.info("Loading model to the plugin")
+        print("Loading model to the plugin")
         self.exec_net = plugin.load(network=self.net, num_requests=2)
 
         self.images = np.ndarray(shape=(self.size))
