@@ -180,6 +180,8 @@ def main():
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
                     face_frame= smile_detector.preprocess_image(frame[face[1]:face[3],face[0]:face[2]])
+                    if face_frame == False:
+                        continue
 
                     # Add directory for smiles and non-smiles if they don't exist
                     if not os.path.exists('smile_images'):
