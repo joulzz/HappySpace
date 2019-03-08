@@ -1,17 +1,61 @@
 import cv2
+import os
+from openvino.inference_engine import IENetwork
+from logging import log
+import numpy as np
 
 class FaceDetection:
-    def __init__(self, path):
+    def __init__(self, plugin, model_xml):
         self.faces = []
-        self.cascade_classifier = cv2.CascadeClassifier(path)
+        model_bin = os.path.splitext(model_xml)[0] + ".bin"
 
-    def run_facedetector(self, image, min_size, max_size):
-        self.faces = []
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        if len(max_size) != 0:
-            faces = self.cascade_classifier.detectMultiScale(gray, 1.3, 5, minSize=tuple(min_size), maxSize=tuple(max_size))
-        else:
-            faces = self.cascade_classifier.detectMultiScale(gray, 1.3, 5, minSize=tuple(min_size))
+        # Create networks
+        self.net = IENetwork(model=model_xml, weights=model_bin)
+        log.info("Preparing input blobs")
+        self.input_blob = next(iter(self.net.inputs))
+        self.out_blob = next(iter(self.net.outputs))
 
-        for face in faces:
-            self.faces.append(((face[0], face[1]), (face[0] + face[2], face[1] + face[3])))
+        # Read and pre-process input images
+        self.size = self.net.inputs[self.input_blob].shape
+
+        log.info("Loading model to the plugin")
+        self.exec_net = plugin.load(network=self.net, num_requests=2)
+
+        self.images = np.ndarray(shape=(self.size))
+
+        del self.net
+
+    def preprocessing(self, frame):
+        if frame.shape[:-1] != (self.size[2], self.size[3]):
+            in_frame = cv2.resize(frame, (self.size[3], self.size[2]))
+        in_frame = in_frame.transpose((2, 0, 1))  # Change data layout from HWC to CHW
+        self.images[0] = in_frame
+
+    def asyncCall(self, request_id):
+        self.exec_net.start_async(request_id=request_id, inputs={self.input_blob: self.images})
+
+    def awaitResults(self, request_id, frame):
+        if self.exec_net.requests[self.request_id].wait(-1) == 0:
+            res = self.exec_net.requests[request_id].outputs[self.out_blob]
+            face_images_array = []
+            coordinates_array = []
+            emo_cur_request_id = 0
+            face_count = 0
+            # print("Face Detection Run Time: {} ms".format((time() - t0) * 1000))
+            # res = res[out_blob]
+            for detection in res[0][0].reshape(-1, 7):
+                confidence = float(detection[2])
+                xmin = int(detection[3] * frame.shape[1])
+                ymin = int(detection[4] * frame.shape[0])
+                xmax = int(detection[5] * frame.shape[1])
+                ymax = int(detection[6] * frame.shape[0])
+
+                if confidence > 0.5:
+                    cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), color=(0, 255, 0), thickness=2)
+                    face = frame[ymin:ymax, xmin:xmax]
+                    self.faces.append(xmin, xmax, ymin, ymax)
+                    print("Face Detection Confidence:", confidence)
+        return True
+
+
+

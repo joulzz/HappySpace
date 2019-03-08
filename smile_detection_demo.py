@@ -14,6 +14,7 @@ import sys
 import boto3
 import os
 from blinkstick import blinkstick
+from openvino.inference_engine import IENetwork, IEPlugin
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -35,13 +36,22 @@ def main():
         subprocess.check_output(['sudo', '/usr/bin/modem3g/sakis3g', 'disconnect'])
         sleep(10)
 
+    plugin = IEPlugin(device="MYRIAD")
     # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
-    face_detector = FaceDetection(os.path.join(dir_path, "Models/haarcascade_frontalface_default.xml"))
-    smile_detector = SmileDetector()
+
+    model_xml = os.path.join(dir_path, "Models/intel_models/face-detection-retail-0004.xml")
+    face_detector = FaceDetection(plugin, model_xml)
+
+    emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
+    smile_detector = SmileDetector(plugin, emo_model_xml)
     tracker = Tracker()
     s3 = boto3.resource('s3')
+
+    cur_request_id = 0
+    next_request_id = 1
+    is_async_mode = True
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
@@ -71,7 +81,21 @@ def main():
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
     while cap.isOpened():
         total_smile_counter = 0
-        _, frame = cap.read()
+
+        if is_async_mode:
+            flag, next_frame = cap.read()
+            if not (flag):
+                print("Skipping Frame")
+                continue
+            next_frame = cv2.resize(next_frame, (640, 480))
+        else:
+            flag, frame = cap.read()
+            if not (flag):
+                print("Skipping Frame")
+                continue
+            frame = cv2.resize(frame, (640, 480))
+
+        # _, frame = cap.read()
         frame = np.array(frame, dtype=np.uint8)
         original = np.copy(frame)
         # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
@@ -93,8 +117,16 @@ def main():
 
         # Initialize face detection
         # print(np.shape(current_frame),current_frame.dtype)
-        face_detector.run_facedetector(current_frame, min_face, max_face)
-        people_tracker.current_frame_bboxes = face_detector.faces
+
+        if is_async_mode:
+            face_detector.preprocessing(next_frame)
+            face_detector.asyncCall(next_request_id)
+        else:
+            face_detector.preprocessing(frame)
+            face_detector.asyncCall(cur_request_id)
+
+        if face_detector.awaitResults():
+            people_tracker.current_frame_bboxes = face_detector.faces
 
         state = []
         bboxes = []
