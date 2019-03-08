@@ -40,7 +40,7 @@ class FaceDetection:
             face_images_array = []
             coordinates_array = []
             emo_cur_request_id = 0
-            face_count = 0
+            self.face_count = 0
             # print("Face Detection Run Time: {} ms".format((time() - t0) * 1000))
             # res = res[out_blob]
             for detection in res[0][0].reshape(-1, 7):
@@ -55,6 +55,7 @@ class FaceDetection:
                     face = frame[ymin:ymax, xmin:xmax]
                     self.faces.append(xmin, xmax, ymin, ymax)
                     print("Face Detection Confidence:", confidence)
+
         return True
 
 

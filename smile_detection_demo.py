@@ -125,7 +125,7 @@ def main():
             face_detector.preprocessing(frame)
             face_detector.asyncCall(cur_request_id)
 
-        if face_detector.awaitResults():
+        if face_detector.awaitResults(cur_request_id,frame):
             people_tracker.current_frame_bboxes = face_detector.faces
 
         state = []
@@ -176,7 +176,8 @@ def main():
                     led.blink(name="yellow")
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
-                    smile_detector.preprocess_image(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                    face_frame= smile_detector.preprocess_image(face)
+
                     # Add directory for smiles and non-smiles if they don't exist
                     if not os.path.exists('smile_images'):
                         os.makedirs('smile_images')
@@ -186,7 +187,7 @@ def main():
                     if people.count == None:
                         people.count = 0
                     # Classify and save as smiles and non-smiles
-                    if smile_detector.predict():
+                    if smile_detector.predict(face_frame):
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
                         led.blink(name="green")
