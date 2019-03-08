@@ -79,6 +79,9 @@ def main():
     # led = blinkstick.find_first()
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
+
+    ret, frame = cap.read()
+    
     while cap.isOpened():
         total_smile_counter = 0
 
@@ -96,8 +99,8 @@ def main():
             frame = cv2.resize(frame, (640, 480))
 
         # _, frame = cap.read()
-        frame = np.array(frame, dtype=np.uint8)
-        original = np.copy(frame)
+        # frame = np.array(frame, dtype=np.uint8)
+        # original = np.copy(frame)
         # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
         # Set previous frame at the start
@@ -113,7 +116,7 @@ def main():
         current_frame = frame
 
         # Set frame for drawing purposes
-        draw_frame = np.copy(frame)
+        draw_frame = np.copy(current_frame)
 
         # Initialize face detection
         # print(np.shape(current_frame),current_frame.dtype)
@@ -316,6 +319,10 @@ def main():
 
         else:
             inference_time_sum += inf_time
+
+        if is_async_mode:
+            cur_request_id, next_request_id = next_request_id, cur_request_id
+            frame = next_frame
 
         print("Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
                                                                                    (time_elapsed - start_time) / 100))
