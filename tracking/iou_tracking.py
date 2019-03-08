@@ -3,7 +3,7 @@ import numpy as np
 
 class Tracker:
     def __init__(self):
-        print "IOU Tracker created"
+        print("IOU Tracker created")
 
     def iou_tracker(self, source_bbox, dest_bbox):
         x1 = max(source_bbox[0][0], dest_bbox[0][0])
