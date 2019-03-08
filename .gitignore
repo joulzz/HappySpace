@@ -1,9 +1,9 @@
 
 \.idea/
-\.Models/
+
 *.pyc
 
-Models/
+
 
 *.zip
 
@@ -14,3 +14,13 @@ Models/
 aws_access_keys\.json
 
 images/
+
+Models/haarcascade_frontalface_default\.xml
+
+Models/sentiment_net/
+
+Models/ssd/
+
+Models/svm_model\.pkl
+
+Models/yolo/
