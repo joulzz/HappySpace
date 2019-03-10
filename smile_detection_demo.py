@@ -128,7 +128,7 @@ def main():
             face_detector.preprocessing(frame)
             face_detector.asyncCall(cur_request_id)
 
-        if face_detector.awaitResults(cur_request_id,frame):
+        if face_detector.awaitResults(cur_request_id,original):
             people_tracker.current_frame_bboxes = face_detector.faces
 
         state = []
