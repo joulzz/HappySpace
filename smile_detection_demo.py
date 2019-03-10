@@ -226,7 +226,7 @@ def main():
             # bboxes.append(person.bbox)
             if person.current:
                 people_tracker.previous_frame_bboxes.append(person.bbox)
-                cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 3)
+                cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 1)
                 cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
                 cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
