@@ -76,8 +76,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    # led = blinkstick.find_first()
-    # led.set_mode(3)
+    led = blinkstick.find_first()
+    led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
     ret, frame = cap.read()
@@ -176,7 +176,7 @@ def main():
             print("Sentiment Net Run")
             for people in person_counter.people:
                 if people.current:
-                    # led.blink(name="yellow")
+                    led.blink(name="yellow")
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
                     try:
@@ -198,7 +198,7 @@ def main():
                     if smile_detector.predict(face_frame):
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
-                        # led.blink(name="green")
+                        led.blink(name="green")
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
