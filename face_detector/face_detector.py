@@ -41,6 +41,7 @@ class FaceDetection:
             coordinates_array = []
             emo_cur_request_id = 0
             self.face_count = 0
+            self.faces=[]
             # print("Face Detection Run Time: {} ms".format((time() - t0) * 1000))
             # res = res[out_blob]
             for detection in res[0][0].reshape(-1, 7):
