@@ -309,8 +309,8 @@ def main():
         # print str(int(time_straight - time_gauge))+" "+str(int(time_smile - time_gauge))
 
         # Displaying Colour Gauge
-        if abs(int(time_gauge - time_face)) % 3600 == 0 and time_face != 0:
-            print("Color Gauge")
+        # if abs(int(time_gauge - time_face)) % 3600 == 0 and time_face != 0:
+        #     print("Color Gauge")
             # colour_gauge_update(total_smile_counter)
 
 
