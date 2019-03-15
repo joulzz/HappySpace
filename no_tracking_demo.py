@@ -182,7 +182,6 @@ def main():
                                                      new_person.count),
                             current_frame[face[0][1] + int((face[1][1] - face[0][1]) * (0.55)): face[1][1],
                             face[0][0]: face[1][0]])
-                    total_smile_counter += 1
                     new_person.count += 1
                 else:
                     if write_images:
@@ -199,11 +198,10 @@ def main():
 
                 time_face = int(time())
 
-        # for person in person_counter.people:
-        #     cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75,
-        #                 (0, 255, 0), 2)
-        #     cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]),
-        #                 cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+        for person in person_counter.people:
+            print("Person ID",person.id,"Smile",person.count)
+            if person.count != None:
+                total_smile_counter += person.count
 
         inf_time = (cv2.getTickCount() - t0) / cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
