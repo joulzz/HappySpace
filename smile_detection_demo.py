@@ -61,6 +61,7 @@ def main():
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 24)
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
@@ -176,7 +177,9 @@ def main():
             print("Sentiment Net Run")
             for people in person_counter.people:
                 if people.current:
+                    tb1 = cv2.getTickCount()
                     led.blink(name="yellow", delay=10)
+                    time_blinkstick = (cv2.getTickCount() - tb1) / cv2.getTickFrequency()
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
                     try:
@@ -198,7 +201,10 @@ def main():
                     if smile_detector.predict(face_frame):
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
+                        tb2 = cv2.getTickCount()
                         led.blink(name="green",  delay=10)
+                        time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
+                        print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
