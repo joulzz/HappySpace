@@ -199,7 +199,7 @@ def main():
                 time_face = int(time())
 
         for person in person_counter.people:
-            print("Person ID",person.id,"Smile",person.count)
+            # print("ID: {0}, Smiles: {1}".format(person.id, person.count))
             if person.count != None:
                 total_smile_counter += person.count
 
