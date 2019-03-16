@@ -79,8 +79,8 @@ def main():
     average_fps = 0
     max_idx = 0
     time_face = 0
-    led = blinkstick.find_first()
-    led.set_mode(3)
+    # led = blinkstick.find_first()
+    # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
     ret, frame = cap.read()
@@ -148,9 +148,9 @@ def main():
             if frame_count % (skip_frame + 1) == 0:
                 print("Sentiment Net Run")
 
-                tb1 = cv2.getTickCount()
-                led.blink(name="yellow", delay=10)
-                time_blinkstick = (cv2.getTickCount() - tb1) / cv2.getTickFrequency()
+                # tb1 = cv2.getTickCount()
+                # led.blink(name="yellow", delay=10)
+                # time_blinkstick = (cv2.getTickCount() - tb1) / cv2.getTickFrequency()
                 # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                 try:
                     face_frame = smile_detector.preprocess_image(
@@ -170,10 +170,10 @@ def main():
                 if smile_detector.predict(face_frame):
                     # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                     # smiling_face(BicolorMatrix8x8.GREEN)
-                    tb2 = cv2.getTickCount()
-                    led.blink(name="green", delay=10)
-                    time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
-                    print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
+                    # tb2 = cv2.getTickCount()
+                    # led.blink(name="green", delay=10)
+                    # time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
+                    # print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
                     # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                     # Check flag 'write_images' to then save images to the images folder in current directory
                     if write_images:
