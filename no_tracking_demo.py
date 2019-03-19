@@ -1,4 +1,3 @@
-from tracking.iou_tracking import Tracker
 import cv2
 import numpy as np
 from face_detector.face_detector import FaceDetection
@@ -47,7 +46,6 @@ def main():
 
     emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
     smile_detector = SmileDetector(plugin, emo_model_xml)
-    tracker = Tracker()
     s3 = boto3.resource('s3')
 
     cur_request_id = 0
