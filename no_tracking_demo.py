@@ -312,7 +312,7 @@ def main():
 
         print("Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
                                                                                    (time_elapsed - start_time) / 100))
-        gc.collect()
+        # gc.collect()
 
     if write_video:
         writer.close()
