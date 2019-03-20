@@ -312,7 +312,10 @@ def main():
 
         print("Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
                                                                                    (time_elapsed - start_time) / 100))
+        tgc = cv2.getTickCount()
         gc.collect()
+        time_gc = (cv2.getTickCount() - tgc) / cv2.getTickFrequency()
+        print("Garbage Collection time: {0} ms".format(time_gc * 1000))
 
     if write_video:
         writer.close()
