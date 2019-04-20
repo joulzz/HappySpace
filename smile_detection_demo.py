@@ -68,9 +68,9 @@ def main():
             cap = stream.array
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 24)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    # cap.set(cv2.CAP_PROP_FPS, 24)
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
