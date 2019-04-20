@@ -15,6 +15,8 @@ import boto3
 import os
 from blinkstick import blinkstick
 from openvino.inference_engine import IENetwork, IEPlugin
+import picamera
+from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -56,12 +58,19 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    cap = cv2.VideoCapture(0)
+    with picamera.PiCamera() as camera:
+        camera.resolution = (320, 240)
+        camera.start_preview()
+        time.sleep(2)
+        with picamera.array.PiRGBArray(camera) as stream:
+            camera.capture(stream, format="bgr")
+            # image = stream.array
+            cap = stream.array
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 24)
+    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    # cap.set(cv2.CAP_PROP_FPS, 24)
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
