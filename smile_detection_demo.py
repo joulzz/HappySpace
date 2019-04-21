@@ -95,19 +95,23 @@ def main():
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
-    ret, frame = vs.read()
+    frame = vs.read()
 
-    while cap.isOpened() or vs:
+    while vs:
         total_smile_counter = 0
 
         if is_async_mode:
-            flag, next_frame = vs.read()
+            next_frame = vs.read()
+            if next_frame:
+                flag= True
             if not (flag):
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            flag, frame = vs.read()
+            frame = vs.read()
+            if frame:
+                flag = True
             if not (flag):
                 print("Skipping Frame")
                 continue
