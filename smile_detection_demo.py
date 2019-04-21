@@ -67,7 +67,7 @@ def main():
         # camera.framerate = 32
         # rawCapture = PiRGBArray(camera, size=(640, 480))
         vs = VideoStream(src=0, usePiCamera = usingPiCamera, resolution=(640,480), framerate=32).start()
-        time.sleep(2.0)
+        sleep(2.0)
     else:
         cap = cv2.VideoCapture(0)
 
