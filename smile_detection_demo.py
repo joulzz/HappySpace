@@ -102,7 +102,7 @@ def main():
 
         if is_async_mode:
             next_frame = vs.read()
-            if next_frame:
+            if next_frame.any():
                 flag= True
             if not (flag):
                 print("Skipping Frame")
@@ -110,7 +110,7 @@ def main():
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
             frame = vs.read()
-            if frame:
+            if frame.any():
                 flag = True
             if not (flag):
                 print("Skipping Frame")
