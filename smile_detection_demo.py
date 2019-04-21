@@ -17,6 +17,8 @@ from blinkstick import blinkstick
 from openvino.inference_engine import IENetwork, IEPlugin
 import picamera
 from picamera.array import PiRGBArray
+from imutils.video import VideoStream
+import imutils
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -59,13 +61,15 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    # if usingPiCamera:
-    #     camera = PiCamera()
-    #     camera.resolution = (640, 480)
-    #     camera.framerate = 32
-    #     rawCapture = PiRGBArray(camera, size=(640, 480))
-    # else:
-    cap = cv2.VideoCapture(0)
+    if usingPiCamera:
+        # camera = PiCamera()
+        # camera.resolution = (640, 480)
+        # camera.framerate = 32
+        # rawCapture = PiRGBArray(camera, size=(640, 480))
+        vs = VideoStream(src=0, usePiCamera = usingPiCamera, resolution=(640,480), framerate=32).start()
+        time.sleep(2.0)
+    else:
+        cap = cv2.VideoCapture(0)
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
@@ -91,19 +95,19 @@ def main():
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
-    ret, frame = cap.read()
+    ret, frame = vs.read()
 
-    while cap.isOpened():
+    while cap.isOpened() or vs:
         total_smile_counter = 0
 
         if is_async_mode:
-            flag, next_frame = cap.read()
+            flag, next_frame = vs.read()
             if not (flag):
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            flag, frame = cap.read()
+            flag, frame = vs.read()
             if not (flag):
                 print("Skipping Frame")
                 continue
@@ -352,7 +356,8 @@ def main():
     if write_video:
         writer.close()
 
-    cap.release()
+    # cap.release()
+    vs.stop()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
