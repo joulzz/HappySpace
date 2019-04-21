@@ -354,7 +354,7 @@ def main():
             if write_video:
                 writer.close()
 
-            cap.release()
+            # cap.release()
             cv2.destroyAllWindows()
 
             del face_detector.exec_net
