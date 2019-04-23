@@ -18,7 +18,7 @@ from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream
 import imutils
 import picamera
-import picamera.array import PiRGBArray
+from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -67,6 +67,7 @@ def main():
         # camera.framerate = 32
         # rawCapture = PiRGBArray(camera, size=(640, 480))
         vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
+        sleep(2.0)
     else:
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
