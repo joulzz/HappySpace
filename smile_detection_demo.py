@@ -97,8 +97,10 @@ def main():
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
     if usingPiCamera:
         cameraCap = vs
+        frame = vs.read()
     else:
         cameraCap = cap.isOpened()
+        frame = cap.read()
 
     while cameraCap:
         total_smile_counter = 0
