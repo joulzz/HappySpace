@@ -15,8 +15,6 @@ import boto3
 import os
 from blinkstick import blinkstick
 from openvino.inference_engine import IENetwork, IEPlugin
-import picamera
-from picamera.array import PiRGBArray
 from imutils.video import VideoStream
 import imutils
 # from gps_module import read_gps_data
@@ -66,8 +64,8 @@ def main():
         # camera.resolution = (640, 480)
         # camera.framerate = 32
         # rawCapture = PiRGBArray(camera, size=(640, 480))
-        vs = VideoStream(src=0, usePiCamera=usingPiCamera, framerate=32).start()
-        sleep(2.0)
+        vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
+        imutils.resize(vs,640)
     else:
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -96,11 +94,11 @@ def main():
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
     if usingPiCamera:
-        frame = vs.read()
+        cameraCap = vs.read()
     else:
-        frame = cap.isOpened()
+        cameraCap = cap.isOpened()
 
-    while frame:
+    while cameraCap:
         total_smile_counter = 0
 
         if is_async_mode:
@@ -363,8 +361,11 @@ def main():
     if write_video:
         writer.close()
 
-    # cap.release()
-    vs.stop()
+    if usingPiCamera:
+        vs.stop()
+    else:
+        cap.release()
+
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
