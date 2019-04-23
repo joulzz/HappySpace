@@ -96,7 +96,7 @@ def main():
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
     if usingPiCamera:
-        cameraCap = vs.read()
+        cameraCap = vs
     else:
         cameraCap = cap.isOpened()
 
