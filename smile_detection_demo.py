@@ -56,7 +56,7 @@ def main():
     cur_request_id = 0
     next_request_id = 1
     is_async_mode = True
-    usingPiCamera = True
+    usingPiCamera = False
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
@@ -66,16 +66,17 @@ def main():
         # camera.resolution = (640, 480)
         # camera.framerate = 32
         # rawCapture = PiRGBArray(camera, size=(640, 480))
-        vs = VideoStream(src=0, usePiCamera = usingPiCamera, framerate=32).start()
+        vs = VideoStream(src=0, usePiCamera=usingPiCamera, framerate=32).start()
         sleep(2.0)
     else:
         cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        cap.set(cv2.CAP_PROP_FPS, 24)
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    # cap.set(cv2.CAP_PROP_FPS, 24)
+
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
@@ -94,10 +95,12 @@ def main():
     # led = blinkstick.find_first()
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
+    if usingPiCamera:
+        frame = vs.read()
+    else:
+        frame = cap.isOpened()
 
-    frame = vs.read()
-
-    while vs:
+    while frame:
         total_smile_counter = 0
 
         if is_async_mode:
