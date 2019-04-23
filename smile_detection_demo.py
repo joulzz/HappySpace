@@ -54,7 +54,7 @@ def main():
     cur_request_id = 0
     next_request_id = 1
     is_async_mode = True
-    usingPiCamera = False
+    usingPiCamera = True
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
@@ -65,7 +65,6 @@ def main():
         # camera.framerate = 32
         # rawCapture = PiRGBArray(camera, size=(640, 480))
         vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
-        imutils.resize(vs,640)
     else:
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
