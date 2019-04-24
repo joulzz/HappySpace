@@ -13,7 +13,8 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
-from blinkstick import blinkstick
+import multiprocessing as mp
+from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 import picamera
 from picamera.array import PiRGBArray
@@ -89,8 +90,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    led = blinkstick.find_first()
-    led.set_mode(3)
+    led = mp.Process(target=led_blink("yellow"),daemon=True)
+    led.start()
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
     ret, frame = cap.read()
@@ -190,7 +191,6 @@ def main():
             for people in person_counter.people:
                 if people.current:
                     tb1 = cv2.getTickCount()
-                    led.blink(name="yellow", delay=10)
                     time_blinkstick = (cv2.getTickCount() - tb1) / cv2.getTickFrequency()
                     # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
@@ -214,7 +214,6 @@ def main():
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
                         tb2 = cv2.getTickCount()
-                        led.blink(name="green",  delay=10)
                         time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
                         print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
