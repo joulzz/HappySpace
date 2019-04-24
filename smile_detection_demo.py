@@ -96,8 +96,9 @@ def main():
     # led = blinkstick.find_first()
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
-    led = mp.Process(target=led_blink("yellow"), daemon=True)
-    led.start()
+
+    # led = mp.Process(target=led_blink("yellow"), daemon=True)
+    # led.start()
     if usingPiCamera:
         cameraCap = vs
         frame = vs.read()
