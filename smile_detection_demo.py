@@ -58,19 +58,22 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    with picamera.PiCamera() as camera:
-        camera.resolution = (320, 240)
-        camera.start_preview()
-        time.sleep(2)
-        with picamera.array.PiRGBArray(camera) as stream:
-            camera.capture(stream, format="bgr")
-            # image = stream.array
-            cap = stream.array
+    # with picamera.PiCamera() as camera:
+    #     camera.resolution = (320, 240)
+    #     camera.start_preview()
+    #     time.sleep(2)
+    #     with picamera.array.PiRGBArray(camera) as stream:
+    #         camera.capture(stream, format="bgr")
+    #         # image = stream.array
+    #         cap = stream.array
+    cap = cv2.VideoCapture(0)
+
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    # cap.set(cv2.CAP_PROP_FPS, 24)
+
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 24)
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
