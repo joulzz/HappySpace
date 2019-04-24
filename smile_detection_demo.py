@@ -104,9 +104,10 @@ def main():
 
     while cameraCap:
         total_smile_counter = 0
-
+        if not usingPiCamera:
+            cameraCap = cap
         if is_async_mode:
-            next_frame = vs.read()
+            next_frame = cameraCap.read()
             if next_frame.any():
                 flag= True
             if not (flag):
@@ -114,7 +115,7 @@ def main():
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = vs.read()
+            frame = cameraCap.read()
             if frame.any():
                 flag = True
             if not (flag):
