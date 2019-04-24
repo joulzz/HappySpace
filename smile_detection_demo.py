@@ -13,7 +13,8 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
-from blinkstick import blinkstick
+import multiprocessing as mp
+from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream
 import imutils
@@ -95,6 +96,8 @@ def main():
     # led = blinkstick.find_first()
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
+    led = mp.Process(target=led_blink("yellow"), daemon=True)
+    led.start()
     if usingPiCamera:
         cameraCap = vs
         frame = vs.read()
