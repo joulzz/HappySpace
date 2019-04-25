@@ -226,7 +226,7 @@ def main():
                         person.history.append(person.bbox)
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
-                        people_tracker.current_frame_bboxes.remove(previous_bbox)
+                        people_tracker.current_frame_bboxes.remove(person.bbox)
 
         # Add unreplaced bboxes
         for bbox in people_tracker.current_frame_bboxes:
