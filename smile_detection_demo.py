@@ -51,7 +51,17 @@ def main():
 
     emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
     smile_detector = SmileDetector(plugin, emo_model_xml)
-    tracker = Tracker()
+    tracker_types = ['KCF', 'MOSSE', 'CSRT']
+    tracker_type = tracker_types[2]
+
+    if tracker_type == 'KCF':
+        tracker = cv2.TrackerKCF_create()
+    if tracker_type == 'MOSSE':
+        tracker = cv2.TrackerMOSSE_create()
+    if tracker_type == "CSRT":
+        tracker = cv2.TrackerCSRT_create()
+
+    # tracker = Tracker()
     s3 = boto3.resource('s3')
 
     cur_request_id = 0
@@ -169,22 +179,31 @@ def main():
             if person.current:
                 person.current = False
                 previous_bbox = person.bbox
+                tracker.init(frame, previous_bbox)
+                print('Previous bbox',previous_bbox)
 
                 bbox_overlaps = []
 
                 # Add overlaps between previous bboxes and current bboxes to an array
-                for current_bbox in people_tracker.current_frame_bboxes:
-                    overlap = tracker.iou_tracker(previous_bbox, current_bbox)
-                    bbox_overlaps.append(overlap)
+                # for current_bbox in people_tracker.current_frame_bboxes:
+                    # overlap = tracker.iou_tracker(previous_bbox, current_bbox)
+                    # bbox_overlaps.append(overlap)
+                ok, current_bbox= tracker.update(next_frame)
+                print('Current bbox', current_bbox)
 
-                if len(bbox_overlaps) != 0:
-                    # If overlap is greater than 50%, replace previous bbox with current one
-                    if max(bbox_overlaps) > 0.5:
+                # if len(bbox_overlaps) != 0:
+                #     # If overlap is greater than 50%, replace previous bbox with current one
+                #     if max(bbox_overlaps) > 0.5:
                         # person.gps = read_gps_data()
-                        person.history.append(person.bbox)
-                        person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
-                        person.current = True
-                        people_tracker.current_frame_bboxes.remove(person.bbox)
+
+                if ok:
+                    person.history.append(person.bbox)
+                    person.bbox = people_tracker.current_frame_bboxes[current_bbox]
+                    person.current = True
+                    people_tracker.current_frame_bboxes.remove(person.bbox)
+                else:
+                    # Tracking failure
+                    cv2.putText(frame, "Tracking failure detected", (100, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0, 0, 255), 2)
 
 
         # Add unreplaced bboxes
@@ -342,6 +361,8 @@ def main():
         #     print("Color Gauge")
             # colour_gauge_update(total_smile_counter)
 
+        # Display tracker type on frame
+        cv2.putText(frame, tracker_type + "Tracker", (100, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
 
         if display_flag:
             cv2.imshow('frame', original)
