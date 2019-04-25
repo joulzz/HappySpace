@@ -14,7 +14,7 @@ import sys
 import boto3
 import os
 import multiprocessing as mp
-from blinkstick_led import led_blink
+# from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream
 import imutils
@@ -107,8 +107,8 @@ def main():
     # led.set_mode(3)
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
-    led = mp.Process(target=led_blink("yellow"), daemon=True)
-    led.start()
+    # led = mp.Process(target=led_blink("yellow"), daemon=True)
+    # led.start()
 
     if usingPiCamera:
         cameraCap = vs
