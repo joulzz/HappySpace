@@ -4,10 +4,10 @@ import numpy as np
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
-import pandas as pd
-from skvideo.io import FFmpegWriter
+# import pandas as pd
+# from skvideo.io import FFmpegWriter
 import gc
-import subprocess
+# import subprocess
 from configuration_module.json_parser import json_parser
 from time import gmtime, strftime, time,sleep
 import sys
@@ -18,7 +18,7 @@ from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream
 import imutils
-import picamera
+# import picamera
 from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
