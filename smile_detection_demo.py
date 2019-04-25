@@ -211,7 +211,7 @@ def main():
                 previous_bbox = person.bbox
                 ok, tracked_bbox_raw = person.tracker.update(next_frame)
                 tracked_bbox = list(map(lambda x: int(x) , tracked_bbox_raw))
-                tracked_bbox = ((tracked_bbox[0]+tracked_bbox[2]),(tracked_bbox[1]+tracked_bbox[3]))
+                tracked_bbox = ((tracked_bbox[0],tracked_bbox[0] + tracked_bbox[2]),(tracked_bbox[1],tracked_bbox[1]+ tracked_bbox[3]))
                 bbox_overlaps = []
 
                 # Add overlaps between previous bboxes and current bboxes to an array
@@ -246,7 +246,7 @@ def main():
             if tracker_type == "CSRT":
                 tracker = cv2.TrackerCSRT_create()
             new_person.tracker = tracker
-            new_person_bbox_edited = (new_person.bbox[0][0], new_person.bbox[0][1], new_person.bbox[1][0]+new_person.bbox[0][0], new_person.bbox[1][1]+new_person.bbox[0][1])
+            new_person_bbox_edited = (new_person.bbox[0][0], new_person.bbox[0][1], new_person.bbox[1][0]-new_person.bbox[0][0], new_person.bbox[1][1]-new_person.bbox[0][1])
             new_person.tracker.init(frame,new_person_bbox_edited)
             # Uncomment to log GPS functionality
             # new_person.gps = read_gps_data()
