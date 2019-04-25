@@ -33,3 +33,4 @@ class People:
         self.timestamp = None
         self.gps = None
         self.non_smiles = 0
+        self.tracker = None
