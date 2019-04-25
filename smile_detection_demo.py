@@ -43,6 +43,7 @@ def main():
 
     plugin = IEPlugin(device="MYRIAD")
     # Create instances of required class objects
+    tracker_iou = Tracker()
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
 
@@ -221,7 +222,7 @@ def main():
 
                 # Add overlaps between previous bboxes and current bboxes to an array
                 for current_bbox in people_tracker.current_frame_bboxes:
-                    overlap = tracker.iou_tracker(tracked_bbox, current_bbox)
+                    overlap = tracker_iou.iou_tracker(tracked_bbox, current_bbox)
                     bbox_overlaps.append(overlap)
 
                 if len(bbox_overlaps) != 0:
