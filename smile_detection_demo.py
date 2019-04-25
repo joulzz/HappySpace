@@ -178,19 +178,23 @@ def main():
         for person in person_counter.people:
             if person.current:
                 person.current = False
-                previous_bbox = person.bbox
+                previous_bbox= person.bbox
+                previous_bbox = (person.bbox[0][0], person.bbox[0][1], person.bbox[1][0], person.bbox[1][1])
                 tracker.init(frame, previous_bbox)
-                print('Previous bbox',previous_bbox)
+                print('Previous bbox', previous_bbox)
 
                 bbox_overlaps = []
 
                 # Add overlaps between previous bboxes and current bboxes to an array
                 # for current_bbox in people_tracker.current_frame_bboxes:
-                    # overlap = tracker.iou_tracker(previous_bbox, current_bbox)
-                    # bbox_overlaps.append(overlap)
-                ok, current_bbox= tracker.update(next_frame)
-                print('Current bbox', current_bbox)
+                #     overlap = tracker.iou_tracker(previous_bbox, current_bbox)
+                #     bbox_overlaps.append(overlap)
 
+
+                ok, current_bbox_raw= tracker.update(next_frame)
+                print('Current bbox', current_bbox_raw)
+                current_bbox= list(map(lambda x: int(x) , current_bbox_raw))
+                current_bbox = ((current_bbox[0],current_bbox[1]),(current_bbox[2],current_bbox[3]))
                 # if len(bbox_overlaps) != 0:
                 #     # If overlap is greater than 50%, replace previous bbox with current one
                 #     if max(bbox_overlaps) > 0.5:
@@ -198,9 +202,9 @@ def main():
 
                 if ok:
                     person.history.append(person.bbox)
-                    person.bbox = people_tracker.current_frame_bboxes[current_bbox]
+                    person.bbox = current_bbox
                     person.current = True
-                    people_tracker.current_frame_bboxes.remove(person.bbox)
+                    # people_tracker.current_frame_bboxes.remove(previous_bbox)
                 else:
                     # Tracking failure
                     cv2.putText(frame, "Tracking failure detected", (100, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0, 0, 255), 2)
