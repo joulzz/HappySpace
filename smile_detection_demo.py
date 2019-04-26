@@ -18,6 +18,8 @@ from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 import picamera
 from picamera.array import PiRGBArray
+from imutils.video import VideoStream, WebcamVideoStream
+import imutils
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
@@ -55,26 +57,25 @@ def main():
     cur_request_id = 0
     next_request_id = 1
     is_async_mode = True
+    usingPiCamera = True
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    # with picamera.PiCamera() as camera:
-    #     camera.resolution = (320, 240)
-    #     camera.start_preview()
-    #     time.sleep(2)
-    #     with picamera.array.PiRGBArray(camera) as stream:
-    #         camera.capture(stream, format="bgr")
-    #         # image = stream.array
-    #         cap = stream.array
-    cap = cv2.VideoCapture(0)
+
+    if usingPiCamera:
+        vs = VideoStream(src=0, usePiCamera=usingPiCamera, resolution=(640, 480), framerate=32).start()
+        sleep(2.0)
+    else:
+        vs = WebcamVideoStream(src=0).start()
+        vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        vs.stream.set(cv2.CAP_PROP_FPS, 24)
+
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
 
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 24)
     previous_frame = []
     frame_count = 0
     # _, frame = cap.read()
@@ -94,19 +95,19 @@ def main():
     led.start()
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
-    ret, frame = cap.read()
+    frame = vs.read()
     
-    while cap.isOpened():
+    while vs:
         total_smile_counter = 0
 
         if is_async_mode:
-            flag, next_frame = cap.read()
+            flag, next_frame = vs.read()
             if not (flag):
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            flag, frame = cap.read()
+            flag, frame = vs.read()
             if not (flag):
                 print("Skipping Frame")
                 continue
@@ -353,7 +354,7 @@ def main():
     if write_video:
         writer.close()
 
-    cap.release()
+    vs.stop()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
