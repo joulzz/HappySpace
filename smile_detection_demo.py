@@ -67,9 +67,14 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    if usingPiCamera:
-        vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
-        sleep(2.0)
+    # if usingPiCamera:
+    #     vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
+    #     sleep(2.0)
+
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 32)
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
@@ -96,20 +101,20 @@ def main():
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
 
-    frame = vs.read()
+    ret, frame = cap.read()
 
-    while vs:
+    while cap.isOpened():
         total_smile_counter = 0
 
         if is_async_mode:
-            next_frame = vs.read()
-            if next_frame.size == 0:
+            next_flag, next_frame = cap.read()
+            if not next_flag:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = vs.read()
-            if frame.size == 0:
+            flag, frame = cap.read()
+            if not flag:
                 print("Skipping Frame")
                 continue
             frame = cv2.resize(frame, (640, 480))
@@ -367,7 +372,7 @@ def main():
     if write_video:
         writer.close()
 
-    vs.stop()
+    cap.release()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
