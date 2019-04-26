@@ -175,7 +175,8 @@ def main():
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(person.bbox)
                 if not person.current:
-                    person.tracker.release()
+                    if person.tracker:
+                        person.tracker.release()
 
 
         # Add unreplaced bboxes
