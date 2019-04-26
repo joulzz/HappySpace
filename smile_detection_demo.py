@@ -57,7 +57,7 @@ def main():
     cur_request_id = 0
     next_request_id = 1
     is_async_mode = True
-    usingPiCamera = True
+    usingPiCamera = False
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
@@ -68,9 +68,9 @@ def main():
         sleep(2.0)
     else:
         vs = WebcamVideoStream(src=0).start()
-        vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        vs.stream.set(cv2.CAP_PROP_FPS, 24)
+        # vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        # vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # vs.stream.set(cv2.CAP_PROP_FPS, 24)
 
 
     if write_video:
