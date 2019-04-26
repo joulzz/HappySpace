@@ -16,7 +16,7 @@ import os
 import multiprocessing as mp
 # from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
-from imutils.video import VideoStream
+from imutils.video import VideoStream, WebcamVideoStream
 import imutils
 # import picamera
 from picamera.array import PiRGBArray
@@ -68,17 +68,10 @@ def main():
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
     if usingPiCamera:
-        # camera = PiCamera()
-        # camera.resolution = (640, 480)
-        # camera.framerate = 32
-        # rawCapture = PiRGBArray(camera, size=(640, 480))
         vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
         sleep(2.0)
     else:
-        cap = cv2.VideoCapture(0)
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        cap.set(cv2.CAP_PROP_FPS, 24)
+        vs = WebcamVideoStream(src=0).start()
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
@@ -105,30 +98,20 @@ def main():
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
 
-    if usingPiCamera:
-        cameraCap = vs
-        frame = vs.read()
-    else:
-        cameraCap = cap.isOpened()
-        frame = cap.read()
+    frame = vs.read()
 
-    while cameraCap:
+    while vs:
         total_smile_counter = 0
-        if not usingPiCamera:
-            cameraCap = cap
+
         if is_async_mode:
-            next_frame = cameraCap.read()
-            if next_frame.any():
-                flag= True
-            if not (flag):
+            next_frame = vs.read()
+            if next_frame.size == 0:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = cameraCap.read()
-            if frame.any():
-                flag = True
-            if not (flag):
+            frame = vs.read()
+            if frame.size == 0:
                 print("Skipping Frame")
                 continue
             frame = cv2.resize(frame, (640, 480))
@@ -141,13 +124,7 @@ def main():
         # Set previous frame at the start
         if len(previous_frame) == 0:
             previous_frame = np.copy(frame)
-        #1
-        # frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=100)
 
-        #2 Histogram Equalization
-        # img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        # img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
-        # frame = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
         current_frame = frame
 
         # Set frame for drawing purposes
@@ -169,41 +146,6 @@ def main():
         state = []
         bboxes = []
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
-        # Here person_counter.people corresponds to previous frame people and people_tracker.current_frame_bboxes to people in current frame
-        # for person in person_counter.people:
-        #     if person.current:
-        #         person.current = False
-        #         previous_bbox= person.bbox
-        #         previous_bbox_edited = (person.bbox[0][0], person.bbox[0][1], person.bbox[1][0], person.bbox[1][1])
-        #         tracker.init(frame, previous_bbox_edited)
-        #         print('Previous bbox', previous_bbox_edited)
-        #
-        #         bbox_overlaps = []
-        #
-        #         # Add overlaps between previous bboxes and current bboxes to an array
-        #         # for current_bbox in people_tracker.current_frame_bboxes:
-        #         #     overlap = tracker.iou_tracker(previous_bbox, current_bbox)
-        #         #     bbox_overlaps.append(overlap)
-        #
-        #
-        #         ok, current_bbox_raw= tracker.update(next_frame)
-        #         print('Current bbox', current_bbox_raw)
-        #         current_bbox= list(map(lambda x: int(x) , current_bbox_raw))
-        #         current_bbox = ((current_bbox[0],current_bbox[1]),(current_bbox[2],current_bbox[3]))
-        #         # if len(bbox_overlaps) != 0:
-        #         #     # If overlap is greater than 50%, replace previous bbox with current one
-        #         #     if max(bbox_overlaps) > 0.5:
-        #                 # person.gps = read_gps_data()
-        #
-        #         if ok:
-        #             person.history.append(person.bbox)
-        #             person.bbox = current_bbox
-        #             person.current = True
-        #             people_tracker.current_frame_bboxes.remove(previous_bbox)
-        #         else:
-        #             # Tracking failure
-        #             cv2.putText(frame, "Tracking failure detected", (100, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0, 0, 255), 2)
 
         for person in person_counter.people:
             if person.current:
@@ -426,10 +368,7 @@ def main():
     if write_video:
         writer.close()
 
-    if usingPiCamera:
-        vs.stop()
-    else:
-        cap.release()
+    vs.stop()
 
     cv2.destroyAllWindows()
 
