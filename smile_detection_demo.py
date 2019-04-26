@@ -71,7 +71,11 @@ def main():
         vs = VideoStream(src=0, usePiCamera=usingPiCamera,resolution=(640, 480), framerate=32).start()
         sleep(2.0)
     else:
-        vs = WebcamVideoStream(src=0).start()
+        vs = WebcamVideoStream(src=0)
+        vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        vs.stream.set(cv2.CAP_PROP_FPS, 32)
+        vs.start()
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
