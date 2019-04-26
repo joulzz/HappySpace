@@ -188,12 +188,11 @@ def main():
             new_person.id = max_idx
             new_person.timestamp = current_time
             if tracker_type == 'KCF':
-                tracker = cv2.TrackerKCF_create()
+                new_person.tracker = cv2.TrackerKCF_create()
             if tracker_type == 'MOSSE':
-                tracker = cv2.TrackerMOSSE_create()
+                new_person.tracker = cv2.TrackerMOSSE_create()
             if tracker_type == "CSRT":
-                tracker = cv2.TrackerCSRT_create()
-            new_person.tracker = tracker
+                new_person.tracker = cv2.TrackerCSRT_create()
             new_person_bbox_edited = (new_person.bbox[0][0], new_person.bbox[0][1], new_person.bbox[1][0]-new_person.bbox[0][0], new_person.bbox[1][1]-new_person.bbox[0][1])
             new_person.tracker.init(frame,new_person_bbox_edited)
             # Uncomment to log GPS functionality
