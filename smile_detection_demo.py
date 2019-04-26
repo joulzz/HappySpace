@@ -101,14 +101,14 @@ def main():
         total_smile_counter = 0
 
         if is_async_mode:
-            flag, next_frame = vs.read()
-            if not (flag):
+            next_frame = vs.read()
+            if not next_frame:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            flag, frame = vs.read()
-            if not (flag):
+            frame = vs.read()
+            if not (frame):
                 print("Skipping Frame")
                 continue
             frame = cv2.resize(frame, (640, 480))
