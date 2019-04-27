@@ -156,7 +156,7 @@ def main():
         state = []
         bboxes = []
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
+        ok = None
         for person in person_counter.people:
             if person.current:
                 person.current = False
@@ -350,7 +350,8 @@ def main():
 
         # Display tracker type on frame
         cv2.putText(frame, tracker_type + " Tracker", (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
-        if not ok:
+
+        if not ok and ok is not None:
             cv2.putText(frame, "Tracking failure detected", (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
 
 
