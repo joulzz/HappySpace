@@ -349,10 +349,10 @@ def main():
             # colour_gauge_update(total_smile_counter)
 
         # Display tracker type on frame
-        cv2.putText(frame, tracker_type + " Tracker", (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
+        cv2.putText(original, tracker_type + " Tracker", (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
 
         if not ok and ok is not None:
-            cv2.putText(frame, "Tracking failure detected", (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
+            cv2.putText(original, "Tracking failure detected", (0, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50, 170, 50), 2)
 
 
         if display_flag:
