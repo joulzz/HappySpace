@@ -152,7 +152,7 @@ def main():
 
         if face_detector.awaitResults(cur_request_id,draw_frame):
             people_tracker.current_frame_bboxes = face_detector.faces
-            print('Current Frame bboxes',people_tracker.current_frame_bboxes)
+            
         state = []
         bboxes = []
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
