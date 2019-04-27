@@ -14,5 +14,7 @@ class Tracker:
         source_height = source_bbox[1][1] - source_bbox[0][1]
         source_area = source_width * source_height
         iou_area = (x2 - x1) * (y2 - y1)
-        overlap_percentage = float(iou_area)/ source_area
+        overlap_percentage = 0
+        if source_area > 0:
+            overlap_percentage = float(iou_area)/ source_area
         return overlap_percentage
