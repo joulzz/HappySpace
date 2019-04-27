@@ -161,7 +161,7 @@ def main():
 
                 # Add overlaps between previous bboxes and current bboxes to an array
                 for current_bbox in people_tracker.current_frame_bboxes:
-                    if (len(tracked_bbox) != 0) and (len(current_bbox) != 0):
+                    if all(tracked_bbox) and all(current_bbox):
                         overlap = tracker_iou.iou_tracker(tracked_bbox, current_bbox)
                         bbox_overlaps.append(overlap)
 
@@ -175,7 +175,7 @@ def main():
                         people_tracker.current_frame_bboxes.remove(person.bbox)
                 if not person.current:
                     if person.tracker:
-                        person.tracker.release()
+                        person.tracker = None
 
 
         # Add unreplaced bboxes
