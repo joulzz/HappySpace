@@ -52,11 +52,9 @@ def main():
 
     emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
     smile_detector = SmileDetector(plugin, emo_model_xml)
-    tracker_types = ['KCF', 'MOSSE', 'CSRT']
-    tracker_type = tracker_types[2]
 
 
-    # tracker = Tracker()
+    tracker = Tracker()
     s3 = boto3.resource('s3')
 
     cur_request_id = 0
@@ -161,16 +159,13 @@ def main():
             if person.current:
                 person.current = False
                 previous_bbox = person.bbox
-                ok, tracked_bbox_raw = person.tracker.update(next_frame)
-                tracked_bbox = list(map(lambda x: int(x) , tracked_bbox_raw))
-                tracked_bbox = ((tracked_bbox[0],tracked_bbox[0] + tracked_bbox[2]),(tracked_bbox[1],tracked_bbox[1]+ tracked_bbox[3]))
+
                 bbox_overlaps = []
 
                 # Add overlaps between previous bboxes and current bboxes to an array
                 for current_bbox in people_tracker.current_frame_bboxes:
-                    if all(tracked_bbox) and all(current_bbox):
-                        overlap = tracker_iou.iou_tracker(tracked_bbox, current_bbox)
-                        bbox_overlaps.append(overlap)
+                    overlap = tracker.iou_tracker(previous_bbox, current_bbox)
+                    bbox_overlaps.append(overlap)
 
                 if len(bbox_overlaps) != 0:
                     # If overlap is greater than 50%, replace previous bbox with current one
@@ -180,9 +175,6 @@ def main():
                         person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
                         person.current = True
                         people_tracker.current_frame_bboxes.remove(person.bbox)
-                if not person.current:
-                    if person.tracker:
-                        person.tracker = None
 
 
         # Add unreplaced bboxes
@@ -193,14 +185,6 @@ def main():
             new_person.current = True
             new_person.id = max_idx
             new_person.timestamp = current_time
-            if tracker_type == 'KCF':
-                new_person.tracker = cv2.TrackerKCF_create()
-            if tracker_type == 'MOSSE':
-                new_person.tracker = cv2.TrackerMOSSE_create()
-            if tracker_type == "CSRT":
-                new_person.tracker = cv2.TrackerCSRT_create()
-            new_person_bbox_edited = (new_person.bbox[0][0], new_person.bbox[0][1], new_person.bbox[1][0]-new_person.bbox[0][0], new_person.bbox[1][1]-new_person.bbox[0][1])
-            new_person.tracker.init(frame,new_person_bbox_edited)
             # Uncomment to log GPS functionality
             # new_person.gps = read_gps_data()
             person_counter.add(new_person)
