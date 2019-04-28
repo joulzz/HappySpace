@@ -152,7 +152,7 @@ def main():
 
         if face_detector.awaitResults(cur_request_id,draw_frame):
             people_tracker.current_frame_bboxes = face_detector.faces
-            
+
         state = []
         bboxes = []
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -167,19 +167,19 @@ def main():
                 bbox_overlaps = []
 
                 # Add overlaps between previous bboxes and current bboxes to an array
-                for current_bbox in people_tracker.current_frame_bboxes:
-                    if all(tracked_bbox) and all(current_bbox):
-                        overlap = tracker_iou.iou_tracker(tracked_bbox, current_bbox)
-                        bbox_overlaps.append(overlap)
+                # for current_bbox in people_tracker.current_frame_bboxes:
+                #     if all(tracked_bbox) and all(current_bbox):
+                #         overlap = tracker_iou.iou_tracker(tracked_bbox, current_bbox)
+                #         bbox_overlaps.append(overlap)
 
                 if len(bbox_overlaps) != 0:
                     # If overlap is greater than 50%, replace previous bbox with current one
                     if max(bbox_overlaps) > 0.5:
                         # person.gps = read_gps_data()
                         person.history.append(person.bbox)
-                        person.bbox = people_tracker.current_frame_bboxes[bbox_overlaps.index(max(bbox_overlaps))]
+                        person.bbox = tracked_bbox
                         person.current = True
-                        people_tracker.current_frame_bboxes.remove(person.bbox)
+                        people_tracker.current_frame_bboxes.remove(previous_bbox)
                 if not person.current:
                     if person.tracker:
                         person.tracker = None
