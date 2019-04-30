@@ -103,7 +103,7 @@ def main():
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
 
-    # frame = vs.read()
+    frame = None
 
     for f in stream:
         total_smile_counter = 0
