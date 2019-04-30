@@ -104,17 +104,17 @@ def main():
 
     # frame = vs.read()
 
-    for frame in stream:
+    for f in stream:
         total_smile_counter = 0
 
         if is_async_mode:
-            next_frame = frame.array
+            next_frame = f.array
             if next_frame.size == 0:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = frame.array
+            frame = f.array
             if frame.size == 0:
                 print("Skipping Frame")
                 continue
@@ -357,6 +357,7 @@ def main():
 
         print("Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
                                                                                    (time_elapsed - start_time) / 100))
+        rawCapture.truncate(0)
         # gc.collect()
 
     if write_video:
