@@ -70,7 +70,7 @@ def main():
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640,480))
     stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
-    time.sleep(2)
+    sleep(2)
 
 
     # cap = cv2.VideoCapture(0)
@@ -102,20 +102,24 @@ def main():
 
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
-
-    frame = None
+    for image in stream:
+        frame = image.array
+        rawCapture.truncate(0)
+        break
 
     for f in stream:
         total_smile_counter = 0
 
         if is_async_mode:
             next_frame = f.array
+            rawCapture.truncate(0)
             if next_frame.size == 0:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
             frame = f.array
+            rawCapture.truncate(0)
             if frame.size == 0:
                 print("Skipping Frame")
                 continue
@@ -358,7 +362,7 @@ def main():
 
         print("Inference time: {0} ms, FPS Average: {1}, Time Elapsed:{2} ".format(inf_time * 1000, average_fps,
                                                                                    (time_elapsed - start_time) / 100))
-        rawCapture.truncate(0)
+
         # gc.collect()
 
     if write_video:
