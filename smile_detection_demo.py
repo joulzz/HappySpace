@@ -70,6 +70,7 @@ def main():
     camera.framerate = 32
     rawCapture = PiRGBArray(camera, size=(640,480))
     stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
+    time.sleep(2)
 
 
     # cap = cv2.VideoCapture(0)
@@ -126,8 +127,8 @@ def main():
         # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
         # Set previous frame at the start
-        # if len(previous_frame) == 0:
-        #     previous_frame = np.copy(frame)
+        if len(previous_frame) == 0:
+            previous_frame = np.copy(frame)
 
         current_frame = frame
 
