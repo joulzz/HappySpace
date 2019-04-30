@@ -18,7 +18,7 @@ import multiprocessing as mp
 from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream, WebcamVideoStream
 import imutils
-import picamera import PiCamera
+from picamera import PiCamera
 from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
