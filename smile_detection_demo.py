@@ -18,7 +18,7 @@ import multiprocessing as mp
 from openvino.inference_engine import IENetwork, IEPlugin
 from imutils.video import VideoStream, WebcamVideoStream
 import imutils
-# import picamera
+import picamera
 from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
@@ -65,15 +65,11 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    if usingPiCamera:
-        vs = VideoStream(src=0, usePiCamera=usingPiCamera, resolution=(640, 480), framerate=32).start()
-        sleep(2.0)
-    else:
-        vs = WebcamVideoStream(src=0)
-        vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        vs.stream.set(cv2.CAP_PROP_FPS, 32)
-        vs.start()
+    camera = PiCamera()
+    camera.resolution = (640,480)
+    camera.framerate = 32
+    rawCapture = PiRGBArray(camera, size=(640,480))
+    stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
 
 
     # cap = cv2.VideoCapture(0)
@@ -106,19 +102,19 @@ def main():
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
 
-    frame = vs.read()
+    # frame = vs.read()
 
-    while vs:
+    for frame in stream:
         total_smile_counter = 0
 
         if is_async_mode:
-            next_frame = vs.read()
+            next_frame = frame.array
             if next_frame.size == 0:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = vs.read()
+            frame = frame.array
             if frame.size == 0:
                 print("Skipping Frame")
                 continue
@@ -366,7 +362,9 @@ def main():
     if write_video:
         writer.close()
 
-    vs.stop()
+    stream.close()
+    rawCapture.close()
+    camera.close()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
