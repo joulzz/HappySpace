@@ -14,7 +14,6 @@ import sys
 import boto3
 import os
 import multiprocessing as mp
-from blinkstick_led import led_blink
 from openvino.inference_engine import IENetwork, IEPlugin
 import picamera
 from picamera.array import PiRGBArray
@@ -93,8 +92,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    led_p = mp.Process(target=led_blink("yellow"),daemon=True)
-    led_p.start()
+    # led_p = mp.Process(target=led_blink("yellow"),daemon=True)
+    # led_p.start()
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
     frame = vs.read()
@@ -356,8 +355,8 @@ def main():
     if write_video:
         writer.close()
 
-    print('Stopping LED process')
-    led_p.terminate()
+    # print('Stopping LED process')
+    # led_p.terminate()
     vs.stop()
     cv2.destroyAllWindows()
 

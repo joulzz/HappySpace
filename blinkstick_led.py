@@ -1,7 +1,7 @@
 from blinkstick import blinkstick
 
 
-def led_blink(color):
+def main():
     try:
         led = blinkstick.find_first()
         led.set_mode(3)
@@ -11,3 +11,5 @@ def led_blink(color):
         for led in blinkstick.find_all():
             led.turn_off()
 
+if __name__ == "__main__":
+    main()
