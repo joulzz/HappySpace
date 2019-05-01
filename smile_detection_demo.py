@@ -93,8 +93,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    led = mp.Process(target=led_blink("yellow"),daemon=True)
-    led.start()
+    led_p = mp.Process(target=led_blink(),daemon=True)
+    led_p.start()
     # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
     frame = vs.read()
@@ -356,6 +356,8 @@ def main():
     if write_video:
         writer.close()
 
+    print('Stopping LED process')
+    led_p.terminate()
     vs.stop()
     cv2.destroyAllWindows()
 
