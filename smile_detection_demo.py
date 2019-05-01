@@ -65,18 +65,11 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-    camera = PiCamera()
-    camera.resolution = (640,480)
-    camera.framerate = 32
-    rawCapture = PiRGBArray(camera, size=(640,480))
-    stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
-    sleep(2)
 
-
-    # cap = cv2.VideoCapture(0)
-    # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    # cap.set(cv2.CAP_PROP_FPS, 32)
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 32)
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
@@ -102,25 +95,21 @@ def main():
 
     # led = mp.Process(target=led_blink("yellow"), daemon=True)
     # led.start()
-    for image in stream:
-        frame = image.array
-        rawCapture.truncate(0)
-        break
 
-    for f in stream:
+    ret, frame = cap.read()
+
+    while cap.isOpened():
         total_smile_counter = 0
 
         if is_async_mode:
-            next_frame = f.array
-            rawCapture.truncate(0)
-            if next_frame.size == 0:
+            next_flag, next_frame = cap.read()
+            if not next_flag:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = f.array
-            rawCapture.truncate(0)
-            if frame.size == 0:
+            flag, frame = cap.read()
+            if not flag:
                 print("Skipping Frame")
                 continue
             frame = cv2.resize(frame, (640, 480))
@@ -368,9 +357,7 @@ def main():
     if write_video:
         writer.close()
 
-    stream.close()
-    rawCapture.close()
-    camera.close()
+    cap.release()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
