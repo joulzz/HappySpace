@@ -92,10 +92,8 @@ def main():
     inference_time_sum = 0
     average_fps = 0
     time_face = 0
-    # led_p = mp.Process(target=led_blink("yellow"),daemon=True)
-    # led_p.start()
-    # subprocess.check_output(['sudo', 'blinkstick', '--set-mode','3'])
 
+    subprocess.call(['python3 blinkstick_led.py'])
     frame = vs.read()
     
     while vs:
