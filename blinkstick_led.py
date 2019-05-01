@@ -9,4 +9,6 @@ def led_blink():
         while True:
             led.morph(name="random",duration=10000)
     except (KeyboardInterrupt, SystemExit):
-        led.turn_off()
+        for led in blinkstick.find_all():
+            led.turn_off()
+
