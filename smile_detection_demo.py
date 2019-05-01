@@ -93,7 +93,7 @@ def main():
     average_fps = 0
     time_face = 0
 
-    subprocess.call(['python3 blinkstick_led.py'])
+    subprocess.Popen(["python3 blinkstick_led.py"], shell=True)
     frame = vs.read()
     
     while vs:
