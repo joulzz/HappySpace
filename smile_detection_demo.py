@@ -101,16 +101,18 @@ def main():
 
         if is_async_mode:
             next_frame = vs.read()
-            if next_frame.size == 0:
-                print("Skipping Frame")
-                continue
-            next_frame = cv2.resize(next_frame, (640, 480))
+            if next_frame is not None:
+                if next_frame.size == 0:
+                    print("Skipping Frame")
+                    continue
+                next_frame = cv2.resize(next_frame, (640, 480))
         else:
             frame = vs.read()
-            if frame.size == 0:
-                print("Skipping Frame")
-                continue
-            frame = cv2.resize(frame, (640, 480))
+            if frame is not None:
+                if frame.size == 0:
+                    print("Skipping Frame")
+                    continue
+                frame = cv2.resize(frame, (640, 480))
 
         # _, frame = cap.read()
         # frame = np.array(frame, dtype=np.uint8)
