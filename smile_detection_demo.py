@@ -4,16 +4,14 @@ import numpy as np
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
-import pandas as pd
-from skvideo.io import FFmpegWriter
-import gc
+# import pandas as pd
+# from skvideo.io import FFmpegWriter
 import subprocess
 from configuration_module.json_parser import json_parser
 from time import gmtime, strftime, time,sleep
 import sys
-import boto3
+# import boto3
 import os
-import multiprocessing as mp
 from openvino.inference_engine import IENetwork, IEPlugin
 import picamera
 from picamera.array import PiRGBArray
