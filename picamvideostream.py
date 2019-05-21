@@ -1,5 +1,6 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from time import sleep
 import cv2
 
 
@@ -10,6 +11,7 @@ class PiCamVideoStream:
         self.camera.framerate = framerate
         self.rawCapture = PiRGBArray(self.camera, size=resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
+        sleep(2)
         self.frame = None
         self.update
 
