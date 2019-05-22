@@ -16,9 +16,10 @@ class PiCamVideoStream:
         self.update
 
     def update(self):
-        for f in self.stream:
-            self.frame = f.array
-            self.rawCapture.truncate(0)
+        while True:
+            for f in self.stream:
+                self.frame = f.array
+                self.rawCapture.truncate(0)
 
     def read(self):
         return self.frame
