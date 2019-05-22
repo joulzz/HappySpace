@@ -157,6 +157,7 @@ def main():
         bboxes = []
         current_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         ok = None
+        #Tracked Version
         for person in person_counter.people:
             if person.current:
                 person.current = False
