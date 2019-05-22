@@ -12,7 +12,10 @@ class PiCamVideoStream:
         self.rawCapture = PiRGBArray(self.camera, size=resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
         sleep(2)
-        self.frame = None
+        for f in self.stream:
+            self.frame = f.array
+            self.rawCapture.truncate(0)
+            break
         self.update
 
     def update(self):
