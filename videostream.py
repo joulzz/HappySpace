@@ -8,7 +8,7 @@ class VideoStream:
 
             self.stream = PiCamVideoStream(resolution=resolution,framerate=framerate)
         else:
-            self.stream = WebCamVideoStream(src=src)
+            self.stream = WebCamVideoStream(src=src,resolution=resolution,framerate=framerate)
 
     def start(self):
         return self.stream.start()

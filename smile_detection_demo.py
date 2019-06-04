@@ -66,10 +66,10 @@ def main():
         vs = VideoStream(usePiCamera=usingPiCamera, resolution=(640, 480), framerate=32)
         vs.start()
     else:
-        vs = VideoStream(usePiCamera=usingPiCamera, src=0)
-        vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        vs.stream.set(cv2.CAP_PROP_FPS, 32)
+        vs = VideoStream(usePiCamera=usingPiCamera, src=0, resolution=(640, 480), framerate=32)
+        # vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        # vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        # vs.stream.set(cv2.CAP_PROP_FPS, 32)
         vs.start()
 
     sleep(2.0)
