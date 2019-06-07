@@ -11,13 +11,14 @@ class WebCamVideoStream:
         self.stopped = False
 
     def start(self):
-        self.update
+        self.update()
         return self
 
     def update(self):
         while True:
             if self.stopped:
                 return
+
             (self.grabbed, self.frame) = self.stream.read()
 
     def read(self):

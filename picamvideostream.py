@@ -20,7 +20,7 @@ class PiCamVideoStream:
             break
 
     def start(self):
-        self.update
+        self.update()
         return self
 
     def update(self):
