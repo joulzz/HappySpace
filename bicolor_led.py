@@ -5,7 +5,7 @@ from PIL import ImageDraw
 from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def straight_face(color):
-    print "Straight face - Yellow"
+    print("Straight face - Yellow")
     display = BicolorMatrix8x8.BicolorMatrix8x8()
     display.begin()
 
@@ -23,7 +23,7 @@ def smiling_face(color):
     display = BicolorMatrix8x8.BicolorMatrix8x8()
     display.begin()
 
-    print "Smiley Face - Green"
+    print("Smiley Face - Green")
 
     x_coordinates = [0,0,0,0,1,1,2,2,2,2,3,3,4,4,4,4,5,5,5,5,6,6,7,7,7,7]
     y_cooordinates = [2,3,4,5,1,6,0,2,5,7,0,7,0,2,5,7,0,3,4,7,1,6,2,3,4,5]
@@ -34,7 +34,7 @@ def smiling_face(color):
     # time.sleep(0.3)
 
 def colour_gauge_update(smile_count):
-    print "Colour Gauge"
+    print("Colour Gauge")
     display = BicolorMatrix8x8.BicolorMatrix8x8()
     display.begin()
     display.clear()
@@ -68,7 +68,7 @@ def colour_gauge_update(smile_count):
 
 
 def colour_gauge(smile_count,seconds_elapsed):
-    print "Colour Gauge"
+    print("Colour Gauge")
     display = BicolorMatrix8x8.BicolorMatrix8x8()
     display.begin()
 
