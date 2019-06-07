@@ -15,8 +15,8 @@ def read_gps_data():
             #            print(line)
 
             if not latitude == ' ' and not longitude == ' ':
-                print "location: ", to_degrees(latitude, longitude, latDirec, longDirec)[0], latDirec,
-                to_degrees(latitude, longitude, latDirec, longDirec)[1], longDirec
+                print("location: ", to_degrees(latitude, longitude, latDirec, longDirec)[0], latDirec,
+                to_degrees(latitude, longitude, latDirec, longDirec)[1], longDirec)
                 final_coordinate = str(to_degrees(latitude, longitude, latDirec,longDirec)[0])+','+ str(to_degrees(latitude, longitude, latDirec,longDirec)[1])
             break
     return final_coordinate
