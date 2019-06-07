@@ -4,24 +4,20 @@ import numpy as np
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
-# import pandas as pd
-# from skvideo.io import FFmpegWriter
+import pandas as pd
+from skvideo.io import FFmpegWriter
 import subprocess
 from configuration_module.json_parser import json_parser
 from time import gmtime, strftime, time,sleep
 import sys
-# import boto3
+import boto3
 import os
 from openvino.inference_engine import IENetwork, IEPlugin
-import picamera
+from picamera import PiCamera
 from picamera.array import PiRGBArray
-from videostream import VideoStream
-from webcamvideostream import WebCamVideoStream
-from picamvideostream import PiCamVideoStream
-import imutils
-# from gps_module import read_gps_data
-# from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
-# from Adafruit_LED_Backpack import BicolorMatrix8x8
+from gps_module import read_gps_data
+from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
+from Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def main():
 
@@ -51,28 +47,21 @@ def main():
     emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
     smile_detector = SmileDetector(plugin, emo_model_xml)
     tracker = Tracker()
-    # s3 = boto3.resource('s3')
+    s3 = boto3.resource('s3')
 
     cur_request_id = 0
     next_request_id = 1
     is_async_mode = True
-    usingPiCamera = False
 
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
-
-    if usingPiCamera:
-        vs = VideoStream(usePiCamera=usingPiCamera, resolution=(640, 480), framerate=32)
-        vs.start()
-    else:
-        vs = VideoStream(usePiCamera=usingPiCamera, src=0, resolution=(640, 480), framerate=32)
-        # vs.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        # vs.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-        # vs.stream.set(cv2.CAP_PROP_FPS, 32)
-        vs.start()
-
-    sleep(2.0)
+    camera = PiCamera()
+    camera.resolution = (640, 480)
+    camera.framerate = 32
+    rawCapture = PiRGBArray(camera, size=(640, 480))
+    stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
+    sleep(2)
 
     if write_video:
         writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
@@ -94,39 +83,35 @@ def main():
     time_face = 0
 
     subprocess.Popen(["python3 blinkstick_led.py"], shell=True)
-    frame = vs.read()
-    
-    while vs:
+
+    for image in stream:
+        frame = image.array
+        rawCapture.truncate(0)
+        break
+
+    for f in stream:
         total_smile_counter = 0
 
         if is_async_mode:
-            next_frame = vs.read()
-            if next_frame is None:
+            next_frame = f.array
+            rawCapture.truncate(0)
+            if next_frame.size == 0:
                 print("Skipping Frame")
                 continue
             next_frame = cv2.resize(next_frame, (640, 480))
         else:
-            frame = vs.read()
-            if frame is None:
+            frame = f.array
+            rawCapture.truncate(0)
+            if frame.size == 0:
                 print("Skipping Frame")
                 continue
             frame = cv2.resize(frame, (640, 480))
 
-        # _, frame = cap.read()
-        # frame = np.array(frame, dtype=np.uint8)
-        # original = np.copy(frame)
-        # frame = frame[roi[1]: roi[3], roi[0]: roi[2]]
         t0 = cv2.getTickCount()
         # Set previous frame at the start
         if len(previous_frame) == 0:
             previous_frame = np.copy(frame)
-        #1
-        # frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=100)
 
-        #2 Histogram Equalization
-        # img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        # img_hsv[:, :, 2] = cv2.equalizeHist(img_hsv[:, :, 2])
-        # frame = cv2.cvtColor(img_hsv, cv2.COLOR_HSV2BGR)
         current_frame = frame
 
         # Set frame for drawing purposes
@@ -355,7 +340,9 @@ def main():
 
     # print('Stopping LED process')
     # led_p.terminate()
-    vs.stop()
+    stream.close()
+    rawCapture.close()
+    camera.close()
     cv2.destroyAllWindows()
 
     del face_detector.exec_net
