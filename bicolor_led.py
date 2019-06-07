@@ -2,7 +2,9 @@ import time
 from PIL import Image
 from PIL import ImageDraw
 
-from Adafruit_Python_LED_Backpack.Adafruit_LED_Backpack import BicolorMatrix8x8
+import sys
+sys.path.insert(0, '/home/pi/OpenVINO/inference_engine_vpu_arm/inference_engine/samples/build/armv7l/Release/HappySpace/Adafruit_Python_LED_Backpack/Adafruit_LED_Backpack')
+import BicolorMatrix8x8
 
 def straight_face(color):
     print("Straight face - Yellow")
