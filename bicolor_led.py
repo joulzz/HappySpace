@@ -2,7 +2,7 @@ import time
 from PIL import Image
 from PIL import ImageDraw
 
-from Adafruit_LED_Backpack import BicolorMatrix8x8
+from Adafruit_Python_LED_Backpack.Adafruit_LED_Backpack import BicolorMatrix8x8
 
 def straight_face(color):
     print("Straight face - Yellow")
