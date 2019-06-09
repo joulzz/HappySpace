@@ -29,7 +29,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images = json_parser(sys.argv[1])
 
     if dongle_connection:
         print("Disconnecting via sakis3g (Main)")
@@ -204,9 +204,12 @@ def main():
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if write_images:
-                            blur_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (15, 15))
+                            if blur_images[0]:
+                                edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                            else:
+                                edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
                             cv2.imwrite(
-                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), blur_smile)
+                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
                         people.count += 1
                     else:
                         if write_images:
