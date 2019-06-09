@@ -55,5 +55,10 @@ def json_parser(json_path):
     else:
         write_images = False
 
+    if "blur_images" in json_config:
+        blur_images = json_config["blur_images"]
+    else:
+        blur_images = False
 
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images
+
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images

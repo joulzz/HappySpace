@@ -9,6 +9,6 @@
   "max_face": [400, 400],
   "running_time": 8,
   "write_images": 0,
-  "blur_images":[1,15]
+  "blur_images": [1,15]
 
 }
