@@ -11,7 +11,7 @@
   "write_images": 1,
   "blur_images": [1,15],
   "invert_images": 1,
-  "pixelate_images": 1,
+  "pixelate_images": [1,16],
   "grayscale_images": 1
 
 }

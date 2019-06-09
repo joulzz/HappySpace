@@ -212,10 +212,18 @@ def main():
                                 edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
+
+                        image = Image.open(os.path.join(dir_path, "smile_images","{1}_{2}.jpg".format(people.id, people.count)))
                         if invert_images:
-                            image = Image.open(os.path.join(dir_path, "smile_images","{1}_{2}.jpg".format(people.id, people.count)))
                             inverted_image = PIL.ImageOps.invert(image)
-                            inverted_image.save(os.path.join(dir_path, "smile_images","{1}_{2}.jpg".format(people.id, people.count)))
+                            inverted_image.save(os.path.join(dir_path, "smile_images","{1}_{2}_inverse.jpg".format(people.id, people.count)))
+                        if pixelate_images[0]:
+                            imgSmall = image.resize(size=(32,32),resample=Image.BILINEAR)
+                            result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
+                            result.save(os.path.join(dir_path, "smile_images","{1}_{2}_pixelate.jpg".format(people.id, people.count)))
+                        if grayscale_images:
+                            img = image.convert('LA')
+                            img.save(os.path.join(dir_path, "smile_images","{1}_{2}_grayscale.jpg".format(people.id, people.count)))
                         people.count += 1
                     else:
                         if write_images:
