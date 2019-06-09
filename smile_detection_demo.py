@@ -214,7 +214,6 @@ def main():
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
 
                         image_path = "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count)
-                        print('Image path',image_path)
                         image = Image.open(image_path)
 
                         if invert_images:
@@ -226,7 +225,7 @@ def main():
                             result.save("{0}/{1}_{2}_pixelate.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         if grayscale_images:
                             img = image.convert('LA')
-                            img.save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
+                            img.convert('RGB').save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         people.count += 1
                     else:
                         if write_images:

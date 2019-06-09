@@ -41,7 +41,7 @@ result.save('pixelate.jpg')
 
 #Grayscale
 img = image.convert('LA')
-img.save('grayscale.jpg')
+img.convert('RGB').save('grayscale.jpg')
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
