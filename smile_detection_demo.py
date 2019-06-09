@@ -173,6 +173,7 @@ def main():
         # person_counter.people is now updated to correspond to people in the current frame
 
         # if frame_count % 5 ==0:
+        calibration_frame= 100
         if frame_count % (skip_frame+1) == 0:
             print("Sentiment Net Run")
             for people in person_counter.people:
@@ -205,27 +206,28 @@ def main():
                         print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
-                        if write_images:
-                            if blur_images[0]:
-                                edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
-                            else:
-                                edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
-                            cv2.imwrite(
-                            "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
+                        if frame_count % (calibration_frame+1) == 0:
+                            if write_images:
+                                if blur_images[0]:
+                                    edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                else:
+                                    edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
+                                cv2.imwrite(
+                                "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
 
-                        image_path = "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count)
-                        image = Image.open(image_path)
+                                image_path = "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count)
+                                image = Image.open(image_path)
 
-                        if invert_images:
-                            inverted_image = PIL.ImageOps.invert(image)
-                            inverted_image.save("{0}/{1}_{2}_inverse.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
-                        if pixelate_images[0]:
-                            imgSmall = image.resize(size=(pixelate_images[1],pixelate_images[1]),resample=Image.BILINEAR)
-                            result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
-                            result.save("{0}/{1}_{2}_pixelate.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
-                        if grayscale_images:
-                            img = image.convert('LA')
-                            img.convert('RGB').save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
+                                if invert_images:
+                                    inverted_image = PIL.ImageOps.invert(image)
+                                    inverted_image.save("{0}/{1}_{2}_inverse.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
+                                if pixelate_images[0]:
+                                    imgSmall = image.resize(size=(pixelate_images[1],pixelate_images[1]),resample=Image.BILINEAR)
+                                    result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
+                                    result.save("{0}/{1}_{2}_pixelate.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
+                                if grayscale_images:
+                                    img = image.convert('LA')
+                                    img.convert('RGB').save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         people.count += 1
                     else:
                         if write_images:
