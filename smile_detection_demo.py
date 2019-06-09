@@ -213,7 +213,9 @@ def main():
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
 
-                        image = Image.open(os.path.join(dir_path, "smile_images","{1}_{2}.jpg".format(people.id, people.count)))
+                        image_path = os.path.join(dir_path, "smile_images","{1}_{2}.jpg".format(people.id, people.count))
+                        image = Image.open(image_path)
+
                         if invert_images:
                             inverted_image = PIL.ImageOps.invert(image)
                             inverted_image.save(os.path.join(dir_path, "smile_images","{1}_{2}_inverse.jpg".format(people.id, people.count)))
