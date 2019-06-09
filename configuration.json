@@ -9,9 +9,9 @@
   "max_face": [400, 400],
   "running_time": 8,
   "write_images": 1,
-  "blur_images": [1,15],
+  "blur_images": [0,15],
   "invert_images": 1,
-  "pixelate_images": [1,16],
-  "grayscale_images": 1
+  "pixelate_images": [0,16],
+  "grayscale_images": 0
 
 }
