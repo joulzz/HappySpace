@@ -12,6 +12,8 @@ from time import gmtime, strftime, time,sleep
 import sys
 import boto3
 import os
+from PIL import Image
+import PIL.ImageOps
 from openvino.inference_engine import IENetwork, IEPlugin
 from picamera import PiCamera
 from picamera.array import PiRGBArray
@@ -29,7 +31,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, invert_images, pixelate_images, grayscale_images = json_parser(sys.argv[1])
 
     if dongle_connection:
         print("Disconnecting via sakis3g (Main)")
@@ -206,6 +208,8 @@ def main():
                         if write_images:
                             if blur_images[0]:
                                 edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                            elif invert_images:
+                                edited_smile = PIL.ImageOps.invert(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]])
                             else:
                                 edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
                             cv2.imwrite(
