@@ -230,12 +230,13 @@ def main():
                                     img.convert('RGB').save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         people.count += 1
                     else:
-                        if write_images:
-                            if people.non_smiles == 0:
-                                blur_non_smile = cv2.blur(current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (15, 15))
-                                cv2.imwrite(
-                                    "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles), blur_non_smile
-                                    )
+                        if frame_count % (calibration_frame + 1) == 0:
+                            if write_images:
+                                if people.non_smiles == 0:
+                                    blur_non_smile = cv2.blur(current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (15, 15))
+                                    cv2.imwrite(
+                                        "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles), blur_non_smile
+                                        )
                         time_straight = int(time())
                         # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # straight_face(BicolorMatrix8x8.YELLOW)
