@@ -218,7 +218,7 @@ def main():
                             inverted_image = PIL.ImageOps.invert(image)
                             inverted_image.save(os.path.join(dir_path, "smile_images","{1}_{2}_inverse.jpg".format(people.id, people.count)))
                         if pixelate_images[0]:
-                            imgSmall = image.resize(size=(32,32),resample=Image.BILINEAR)
+                            imgSmall = image.resize(size=(pixelate_images[1],pixelate_images[1]),resample=Image.BILINEAR)
                             result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
                             result.save(os.path.join(dir_path, "smile_images","{1}_{2}_pixelate.jpg".format(people.id, people.count)))
                         if grayscale_images:
