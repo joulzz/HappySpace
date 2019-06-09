@@ -213,19 +213,20 @@ def main():
                             cv2.imwrite(
                             "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
 
-                        image_path = os.path.join(dir_path, "/smile_images","/{0}_{1}.jpg".format(people.id, people.count))
+                        image_path = "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count)
+                        print('Image path',image_path)
                         image = Image.open(image_path)
 
                         if invert_images:
                             inverted_image = PIL.ImageOps.invert(image)
-                            inverted_image.save(os.path.join(dir_path, "/smile_images","/{0}_{1}_inverse.jpg".format(people.id, people.count)))
+                            inverted_image.save("{0}/{1}_{2}_inverse.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         if pixelate_images[0]:
                             imgSmall = image.resize(size=(pixelate_images[1],pixelate_images[1]),resample=Image.BILINEAR)
                             result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
-                            result.save(os.path.join(dir_path, "/smile_images","/{0}_{1}_pixelate.jpg".format(people.id, people.count)))
+                            result.save("{0}/{1}_{2}_pixelate.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         if grayscale_images:
                             img = image.convert('LA')
-                            img.save(os.path.join(dir_path, "/smile_images","/{0}_{1}_grayscale.jpg".format(people.id, people.count)))
+                            img.save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
                         people.count += 1
                     else:
                         if write_images:
