@@ -60,20 +60,15 @@ def json_parser(json_path):
     else:
         blur_images = False
 
-    if "invert_images" in json_config:
-        invert_images = json_config["invert_images"]
+    if "calibration_smile" in json_config:
+        calibration_smile = json_config["calibration_smile"]
     else:
-        invert_images = False
+        calibration_smile = False
 
-    if "pixelate_images" in json_config:
-        pixelate_images = json_config["pixelate_images"]
+    if "calibration_nonsmile" in json_config:
+        calibration_nonsmile = json_config["calibration_nonsmile"]
     else:
-        pixelate_images = False
-
-    if "grayscale_images" in json_config:
-        grayscale_images= json_config["grayscale_images"]
-    else:
-        grayscale_images= False
+        calibration_nonsmile = False
 
 
-    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, invert_images,pixelate_images,grayscale_images
+    return tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile,calibration_nonsmile

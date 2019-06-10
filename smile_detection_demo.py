@@ -31,7 +31,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, invert_images, pixelate_images, grayscale_images = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile = json_parser(sys.argv[1])
 
     if dongle_connection:
         print("Disconnecting via sakis3g (Main)")
@@ -173,7 +173,6 @@ def main():
         # person_counter.people is now updated to correspond to people in the current frame
 
         # if frame_count % 5 ==0:
-        calibration_frame= 100
         if frame_count % (skip_frame+1) == 0:
             print("Sentiment Net Run")
             for people in person_counter.people:
@@ -206,38 +205,24 @@ def main():
                         print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
                         # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
-                        if frame_count % (calibration_frame+1) == 0:
+                        if frame_count % (calibration_smile+1) == 0:
                             if write_images:
                                 if blur_images[0]:
-                                    edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                    edited_smile = cv2.blur(current_frame[face[0][1]+int(face[1][1]-face[0][1]): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
                                 else:
-                                    edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
-                                cv2.imwrite(
-                                "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
-
-                                image_path = "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count)
-                                image = Image.open(image_path)
-
-                                if invert_images:
-                                    inverted_image = PIL.ImageOps.invert(image)
-                                    inverted_image.save("{0}/{1}_{2}_inverse.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
-                                if pixelate_images[0]:
-                                    imgSmall = image.resize(size=(pixelate_images[1],pixelate_images[1]),resample=Image.BILINEAR)
-                                    result = imgSmall.resize(size=(640,480),resample=Image.NEAREST)
-                                    result.save("{0}/{1}_{2}_pixelate.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
-                                if grayscale_images:
-                                    img = image.convert('LA')
-                                    img.convert('RGB').save("{0}/{1}_{2}_grayscale.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count))
+                                    edited_smile = current_frame[face[0][1]+int(face[1][1]-face[0][1]): face[1][1], face[0][0]: face[1][0]]
+                                cv2.imwrite("{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
                         people.count += 1
                     else:
-                        if frame_count % (calibration_frame + 1) == 0:
+                        if frame_count % (calibration_nonsmile + 1) == 0:
                             if write_images:
                                 if people.non_smiles == 0:
-                                    blur_non_smile = cv2.blur(current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (15, 15))
-                                    cv2.imwrite(
-                                        "{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles), blur_non_smile
-                                        )
-                        time_straight = int(time())
+                                    if blur_images[0]:
+                                        edited_nonsmile= cv2.blur(current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                    else:
+                                        edited_nonsmile= current_frame[face[0][1] + int((face[1][1] - face[0][1])*(0.55)): face[1][1], face[0][0]: face[1][0]]
+                                    cv2.imwrite("{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles), edited_nonsmile)
+                        # time_straight = int(time())
                         # Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # straight_face(BicolorMatrix8x8.YELLOW)
                         people.non_smiles += 1
