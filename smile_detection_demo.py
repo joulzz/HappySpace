@@ -208,9 +208,9 @@ def main():
                         if frame_count % (calibration_smile+1) == 0:
                             if write_images:
                                 if blur_images[0]:
-                                    edited_smile = cv2.blur(current_frame[face[0][1]+int(face[1][1]-face[0][1]): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                    edited_smile = cv2.blur(current_frame[face[0][1]+int((face[1][1]-face[0][1])(0.55)): face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
                                 else:
-                                    edited_smile = current_frame[face[0][1]+int(face[1][1]-face[0][1]): face[1][1], face[0][0]: face[1][0]]
+                                    edited_smile = current_frame[face[0][1]+int((face[1][1]-face[0][1])(0.55)): face[1][1], face[0][0]: face[1][0]]
                                 cv2.imwrite("{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
                         people.count += 1
                     else:
