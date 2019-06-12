@@ -196,6 +196,10 @@ def main():
 
                     if people.count == None:
                         people.count = 0
+
+                    blur_percentage = float(blur_images[1]/100)
+                    print('Blur %',blur_percentage)
+
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict(face_frame):
                         # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
@@ -208,7 +212,9 @@ def main():
                         if frame_count % (calibration_smile+1) == 0:
                             if write_images:
                                 if blur_images[0]:
-                                    edited_smile = cv2.blur(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                    edited_frame = current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]]
+                                    kernel_size = int(blur_percentage * edited_frame.shape[0])
+                                    edited_smile = cv2.blur(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]], (kernel_size, kernel_size))
                                 else:
                                     edited_smile = current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]]
                                 cv2.imwrite("{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "smile_images"), people.id, people.count), edited_smile)
@@ -218,7 +224,9 @@ def main():
                             if write_images:
                                 if people.non_smiles == 0:
                                     if blur_images[0]:
-                                        edited_nonsmile= cv2.blur(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]], (blur_images[1], blur_images[1]))
+                                        edited_frame_nonsmile = current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]]
+                                        kernel_size = int(blur_percentage * edited_frame_nonsmile.shape[0])
+                                        edited_nonsmile= cv2.blur(current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]], (kernel_size, kernel_size))
                                     else:
                                         edited_nonsmile= current_frame[face[0][1]: face[1][1], face[0][0]: face[1][0]]
                                     cv2.imwrite("{0}/{1}_{2}.jpg".format(os.path.join(dir_path, "non_smiles_images"), people.id, people.non_smiles), edited_nonsmile)
