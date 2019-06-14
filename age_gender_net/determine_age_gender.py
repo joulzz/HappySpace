@@ -33,7 +33,6 @@ class GAPredictor:
     def predict(self, face_frame):
 
         res = self.exec_ga_net.infer(inputs={self.ga_input_blob: face_frame})
-        res = res[self.ga_out_blob]
         print(res)
         return res
 
