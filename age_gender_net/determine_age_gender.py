@@ -35,6 +35,7 @@ class GAPredictor:
         res = self.exec_ga_net.infer(inputs={self.ga_input_blob: face_frame})
         res = res[self.ga_out_blob]
         print(res)
+        return res
 
         # result = self.network.predict(self.image)
         # output = self.final_layer.predict(result)

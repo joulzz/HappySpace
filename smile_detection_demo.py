@@ -49,6 +49,10 @@ def main():
 
     emo_model_xml = os.path.join(dir_path, "Models/intel_models/emotions-recognition-retail-0003.xml")
     smile_detector = SmileDetector(plugin, emo_model_xml)
+
+    ga_model_xml = os.path.join(dir_path, "Models/intel_models/age-gender-recognition-retail-0013.xml")
+    ga_detector = GAPredictor(plugin, ga_model_xml)
+
     tracker = Tracker()
     s3 = boto3.resource('s3')
 
@@ -185,8 +189,18 @@ def main():
                     try:
                         face_frame= smile_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     except:
-                        print("Exception Raised in Resizing Image")
+                        print("Exception Raised in Resizing Image for Smile Prediction")
                         continue
+
+
+                    try:
+                        ga_face_frame= ga_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                    except:
+                        print("Exception Raised in Resizing Image for Gender-Age")
+                        continue
+
+
+                    print(ga_detector.predict(ga_face_frame))
 
 
                     # Add directory for smiles and non-smiles if they don't exist
