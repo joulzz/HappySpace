@@ -4,6 +4,7 @@ import numpy as np
 from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
+from age_gender_net.determine_age_gender import GAPredictor
 import pandas as pd
 from skvideo.io import FFmpegWriter
 import subprocess
