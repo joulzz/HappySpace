@@ -6,6 +6,8 @@ from openvino.inference_engine import IENetwork
 
 class GAPredictor:
     def __init__(self, plugin, ga_model_xml):
+        self.gender_list = ["female", "male]
+
         ga_model_bin = os.path.splitext(ga_model_xml)[0] + ".bin"
         self.ga_net = IENetwork(model=ga_model_xml, weights=ga_model_bin)
 
@@ -33,8 +35,10 @@ class GAPredictor:
     def predict(self, face_frame):
 
         res = self.exec_ga_net.infer(inputs={self.ga_input_blob: face_frame})
-        print(res)
-        return res
+        age = int(res['age_conv3'].reshape(-1) * 100)
+        gender = self.gender_list[np.argmax(res['prob'].reshape(-1, 2))]
+
+        return age, gender
 
         # result = self.network.predict(self.image)
         # output = self.final_layer.predict(result)

@@ -200,7 +200,13 @@ def main():
                         continue
 
 
-                    print(ga_detector.predict(ga_face_frame))
+                    age, gender = ga_detector.predict(ga_face_frame)
+
+                    print("Age: ", age)
+                    print("Gender: ", gender)
+
+                    people.age = age
+                    people.gender = gender
 
 
                     # Add directory for smiles and non-smiles if they don't exist
@@ -261,6 +267,11 @@ def main():
                 cv2.rectangle(draw_frame, person.bbox[0], person.bbox[1], (255, 255, 255), 1)
                 cv2.putText(draw_frame, "ID: {0}".format(person.id), person.bbox[0], cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
                 cv2.putText(draw_frame, "SMILES: {0}".format(person.count), (person.bbox[0][0], person.bbox[1][1]), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+                if person.age != 0:
+                    cv2.putText(draw_frame, "Age: {0}".format(person.age), (person.bbox[0][0], person.bbox[1][1] + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+                if person.gender != None:
+                    cv2.putText(draw_frame, "Gender: {0}".format(person.gender), (person.bbox[0][0], person.bbox[1][1] + 30), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
+
 
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
