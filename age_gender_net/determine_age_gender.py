@@ -6,7 +6,7 @@ from openvino.inference_engine import IENetwork
 
 class GAPredictor:
     def __init__(self, plugin, ga_model_xml):
-        emo_model_bin = os.path.splitext(ga_model_xml)[0] + ".bin"
+        ga_model_bin = os.path.splitext(ga_model_xml)[0] + ".bin"
         self.ga_net = IENetwork(model=ga_model_xml, weights=ga_model_bin)
 
         self.ga_input_blob = next(iter(self.ga_net.inputs))
