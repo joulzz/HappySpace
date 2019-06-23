@@ -1,0 +1,12 @@
+{
+    "fileLocations": [
+        {
+            "URIPrefixes": [
+                "s3://happyspace-kinesisdump/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {
+        "delimiter": "|"
+    }
+}

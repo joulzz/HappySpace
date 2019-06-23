@@ -5,6 +5,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 from age_gender_net.determine_age_gender import GAPredictor
+from kinesis-api.stream_add import kinesis_put_data
 import pandas as pd
 from skvideo.io import FFmpegWriter
 import subprocess
@@ -284,10 +285,15 @@ def main():
             last_bbox = []
             location_history = []
             timestamp = []
+            ages = []
+            genders = []
             # Uncomment to log GPS functionality
             # gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
+                ages.append(people.age)
+                genders.append(people.gender)
+                
                 ids.append(people.id)
                 smile_count.append(people.count)
                 last_bbox.append(people.bbox)
@@ -298,10 +304,16 @@ def main():
 
             df["ID"] = ids
             df["Smiles_Detected"] = smile_count
+            df["Predicted_Age"] = ages
+            df["Predicted_Gender"] = genders
             df["Last_Location"] = last_bbox
             df["Location_History"] =location_history
             df["Timestamp"] = timestamp
             # df["GPS_DD"] = gps_dd
+
+            for i in range(len(df.index)):
+                row_entry = ("|").join([str(val) for val in df.iloc[i][:].values.tolist()])
+                kinesis_put_data(row_entry + "\n")
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
