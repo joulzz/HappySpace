@@ -64,7 +64,7 @@ def axis_coordinates(x):
 
 output_df['Node'].apply(axis_coordinates)
 
-ax.scatter(x_coord, y_coord, output_df['ID'], c='r', marker='^')
+ax.scatter(x_coord, y_coord, output_df['ID'], color='blue', marker='^')
 
 ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
