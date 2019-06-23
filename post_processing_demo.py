@@ -1,3 +1,4 @@
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -8,6 +9,7 @@ def center_node(x):
     x = ast.literal_eval(x)
     x = (((int(x[0][0])+int(x[1][0]))/2),((int(x[0][1])+int(x[1][1]))/2))
     return x
+
 
 output_df = pd.read_csv('2018-11-17.csv')
 # Node- (x,y) center of the face bounding box
@@ -49,12 +51,26 @@ for i, (index, row) in enumerate(output_df.iterrows()):
 print(output_df)
 
 # Unique Distributions Plot
-output_df['Node'] = ast.literal_eval(output_df['Node'])
-print(output_df['Node'])
 
-# output_df.plot(kind='scatter',x='ID',y='Distance',color='red')
-# plt.show()
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+x_coord=[]
+y_coord=[]
 
+
+def axis_coordinates(x):
+    x_coord.append(x[0])
+    y_coord.append(x[1])
+
+output_df['Node'].apply(axis_coordinates)
+
+ax.scatter(x_coord, y_coord, output_df['ID'], c='r', marker='^')
+
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('ID')
+
+plt.show()
 
 
 
