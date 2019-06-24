@@ -74,30 +74,10 @@ if __name__ == "__main__":
                 output_df.loc[index, 'ID'] = output_df.loc[index,'Reference ID']
 
 
-    # Unique Distributions Plot
+
     unique_id_df = output_df.drop_duplicates(subset=['ID'], keep='last', inplace=False).reset_index(drop=True)
 
     print(unique_id_df)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    x_coord=[]
-    y_coord=[]
-
-
-    def axis_coordinates(x):
-        x_coord.append(x[0])
-        y_coord.append(x[1])
-
-    unique_id_df['Node'].apply(axis_coordinates)
-
-    ax.scatter(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
-
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('ID')
-
-    plt.show()
 
 
     ## Scores
@@ -119,6 +99,28 @@ if __name__ == "__main__":
 
     print("Dynamic Score: ", len(unique_id_df))
     print("Happiness Score: ",  output_df['Smiles_Detected'].sum())
+
+    # Unique Distributions Plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x_coord = []
+    y_coord = []
+
+
+    def axis_coordinates(x):
+        x_coord.append(x[0])
+        y_coord.append(x[1])
+
+
+    unique_id_df['Node'].apply(axis_coordinates)
+
+    ax.scatter(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
+
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('ID')
+
+    plt.show()
 
 
 
