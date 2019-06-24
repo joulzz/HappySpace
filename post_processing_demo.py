@@ -1,4 +1,5 @@
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -102,7 +103,7 @@ if __name__ == "__main__":
 
     # Unique Distributions Plot
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = plt.axes(projection='3d')
     x_coord = []
     y_coord = []
 
@@ -114,7 +115,7 @@ if __name__ == "__main__":
 
     unique_id_df['Node'].apply(axis_coordinates)
 
-    ax.scatter(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
+    ax.scatter3D(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
