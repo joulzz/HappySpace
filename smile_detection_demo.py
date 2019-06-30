@@ -76,6 +76,8 @@ def main():
 
     previous_frame = []
     frame_count = 0
+    kinesis_frame_count = 0
+
     # _, frame = cap.read()
 
 
