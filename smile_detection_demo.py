@@ -310,9 +310,9 @@ def main():
             kinesis_df["Timestamp"] = kinesis_timestamp
             # df["GPS_DD"] = gps_dd
 
-        for i in range(len(kinesis_df.index)):
-            row_entry = ("|").join([str(val) for val in kinesis_df.iloc[i][:].values.tolist()])
-            kinesis_put_data(row_entry + "\n")
+            for i in range(len(kinesis_df.index)):
+                row_entry = ("|").join([str(val) for val in kinesis_df.iloc[i][:].values.tolist()])
+                kinesis_put_data(row_entry + "\n")
 
 
             
