@@ -5,7 +5,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 from age_gender_net.determine_age_gender import GAPredictor
-from kinesis-api.stream_add import kinesis_put_data
+from kinesis_api.stream_add import kinesis_put_data
 import pandas as pd
 from skvideo.io import FFmpegWriter
 import subprocess
@@ -275,9 +275,8 @@ def main():
 
 
 
-        if frame_count % kinesis_rate == 0:
-            frame_count = 0
-            # Write to CSV, Create different write parameters
+        if kinesis_frame_count  == kinesis_rate:
+            kinesis_frame_count = 0
             kinesis_df = pd.DataFrame()
             kinesis_ids = []
             kinesis_smile_count = []
@@ -388,6 +387,7 @@ def main():
             break
 
         frame_count += 1
+        kinesis_frame_count += 1
 
         original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
