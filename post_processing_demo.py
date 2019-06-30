@@ -115,13 +115,16 @@ if __name__ == "__main__":
 
     unique_id_df['Node'].apply(axis_coordinates)
 
-    ax.scatter3D(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
+    ax.scatter(x_coord, y_coord, unique_id_df['ID'], color='blue', marker='^')
 
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('ID')
+    ts = time.time()
 
-    plt.show()
+
+    unique_id_df.to_csv(str(ts)+ '_processed.csv', index=False)
+    plt.savefig(str(ts) + '_3dplot.png')
 
 
 
