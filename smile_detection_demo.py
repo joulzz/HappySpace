@@ -33,7 +33,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate = json_parser(sys.argv[1])
 
     if dongle_connection:
         print("Disconnecting via sakis3g (Main)")
@@ -274,6 +274,48 @@ def main():
                     cv2.putText(draw_frame, "Gender: {0}".format(person.gender), (person.bbox[0][0], person.bbox[1][1] + 30), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
 
+
+        if frame_count % kinesis_rate == 0:
+            frame_count = 0
+            # Write to CSV, Create different write parameters
+            kinesis_df = pd.DataFrame()
+            kinesis_ids = []
+            kinesis_smile_count = []
+            kinesis_last_bbox = []
+            kinesis_location_history = []
+            kinesis_timestamp = []
+            kinesis_ages = []
+            kinesis_genders = []
+            # Uncomment to log GPS functionality
+            # gps_dd = []
+            for people in person_counter.people:
+                people.history.append(people.bbox)
+                kinesis_ages.append(people.age)
+                kinesis_genders.append(people.gender)
+                
+                kinesis_ids.append(people.id)
+                kinesis_smile_count.append(people.count)
+                kinesis_last_bbox.append(people.bbox)
+                kinesis_location_history.append(people.history)
+                kinesis_timestamp.append(people.timestamp)
+                # Uncomment to log GPS functionality
+                # gps_dd.append(people.gps)
+
+            kinesis_df["ID"] = kinesis_ids
+            kinesis_df["Smiles_Detected"] = kinesis_smile_count
+            kinesis_df["Predicted_Age"] = kinesis_ages
+            kinesis_df["Predicted_Gender"] = kinesis_genders
+            kinesis_df["Last_Location"] = kinesis_last_bbox
+            kinesis_df["Location_History"] = kinesis_location_history
+            kinesis_df["Timestamp"] = kinesis_timestamp
+            # df["GPS_DD"] = gps_dd
+
+        for i in range(len(kinesis_df.index)):
+            row_entry = ("|").join([str(val) for val in kinesis_df.iloc[i][:].values.tolist()])
+            kinesis_put_data(row_entry + "\n")
+
+
+            
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
@@ -311,9 +353,7 @@ def main():
             df["Timestamp"] = timestamp
             # df["GPS_DD"] = gps_dd
 
-            for i in range(len(df.index)):
-                row_entry = ("|").join([str(val) for val in df.iloc[i][:].values.tolist()])
-                kinesis_put_data(row_entry + "\n")
+       
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
