@@ -18,6 +18,7 @@ def kinesis_put_data(data):
         Data=data,
         PartitionKey=get_partition_key()
     )
+    print("****** Kinesis Data Pushed with response : {} ******".format(response))
 
 
 
