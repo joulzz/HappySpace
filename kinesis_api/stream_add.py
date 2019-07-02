@@ -20,6 +20,23 @@ def kinesis_put_data(data):
     )
     print("****** Kinesis Data Pushed with response : {} ******".format(response))
 
+def kinesis_batch_put(data):
+    records = []
+    key = get_partition_key()
+    for item in data:
+        records.append(
+            {
+                'Data': item,
+                'ParitionKey': key
+            }
+        )
+    
+    response = client.put_records(
+        Records=records,
+        StreamName='HappySpaceStream'
+    )
+    print("****** Kinesis Batch Data Pushed with response : {} ******".format(response))
+
 
 
 if __name__ == "__main__":

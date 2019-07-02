@@ -5,7 +5,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 from age_gender_net.determine_age_gender import GAPredictor
-from kinesis_api.stream_add import kinesis_put_data
+from kinesis_api.stream_add import kinesis_put_data, kinesis_batch_put
 import pandas as pd
 from skvideo.io import FFmpegWriter
 import subprocess
@@ -311,9 +311,14 @@ def main():
             kinesis_df["Timestamp"] = kinesis_timestamp
             # df["GPS_DD"] = gps_dd
 
+            data_upload_list = []
             for i in range(len(kinesis_df.index)):
                 row_entry = ("|").join([str(val) for val in kinesis_df.iloc[i][:].values.tolist()])
-                kinesis_put_data(row_entry + "\n")
+                data_upload_list.append(row_entry + "\n")
+            
+            kinesis_batch_put(data_upload_list)
+
+            
 
 
             
