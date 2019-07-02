@@ -27,7 +27,7 @@ def kinesis_batch_put(data):
         records.append(
             {
                 'Data': item,
-                'ParitionKey': key
+                'PartitionKey': key
             }
         )
     
