@@ -291,14 +291,16 @@ def main():
             # gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
-                kinesis_ages.append(people.age)
-                kinesis_genders.append(people.gender)
-                
-                kinesis_ids.append(people.id)
-                kinesis_smile_count.append(people.count)
-                kinesis_last_bbox.append(people.bbox)
-                kinesis_location_history.append(people.history)
-                kinesis_timestamp.append(people.timestamp)
+                if not(people.streamed):
+                    people.streamed = True
+                    kinesis_ages.append(people.age)
+                    kinesis_genders.append(people.gender)
+                    
+                    kinesis_ids.append(people.id)
+                    kinesis_smile_count.append(people.count)
+                    kinesis_last_bbox.append(people.bbox)
+                    kinesis_location_history.append(people.history)
+                    kinesis_timestamp.append(people.timestamp)
                 # Uncomment to log GPS functionality
                 # gps_dd.append(people.gps)
 

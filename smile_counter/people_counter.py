@@ -35,3 +35,4 @@ class People:
         self.non_smiles = 0
         self.gender = None
         self.age = 0
+        self.streamed = False
