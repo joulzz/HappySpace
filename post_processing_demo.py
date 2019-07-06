@@ -71,6 +71,7 @@ if __name__ == "__main__":
             if (output_df.loc[index,'Distance'] < R and time_difference < V):
                 print ("Replaced ID at Index: ", index)
                 output_df.loc[index,'ID']= output_df.loc[index-1,'ID']
+                output_df.loc[index,'Location_History']+= output_df.loc[index-1,'Last_Location']
             else:
                 output_df.loc[index, 'ID'] = output_df.loc[index,'Reference ID']
 
