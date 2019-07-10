@@ -55,8 +55,10 @@ def main():
     ga_model_xml = os.path.join(dir_path, "Models/intel_models/age-gender-recognition-retail-0013.xml")
     ga_detector = GAPredictor(plugin, ga_model_xml)
 
-    fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0071.xml", "Models/intel_models/landmarks-regression-retail-0009.xml")
-    fr_detector = FaceReidentification(plugin, fr_model_xml)
+    fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0071.xml")
+    landmarks_model_xml = os.path.join(dir_path, "Models/intel_models/landmarks-regression-retail-0009.xml")
+
+    fr_detector = FaceReidentification(plugin, landmarks_model_xml, fr_model_xml)
 
     tracker = Tracker()
     s3 = boto3.resource('s3')
