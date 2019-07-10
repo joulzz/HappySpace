@@ -65,7 +65,7 @@ class FaceReidentification:
             face_frame = cv2.resize(face, (self.landmark_size[3], self.landmark_size[2]))
 
         in_frame = face_frame.transpose((2, 0, 1))
-        res = self.exec_landmark_net.infer(inputs={self.landmark_input_blob: in_frame}).reshape(1, 10)[0]
+        res = self.exec_landmark_net.infer(inputs={self.landmark_input_blob: in_frame})[self.landmark_out_blob].reshape(1, 10)[0]
         facial_landmarks = np.zeros((5, 2)) 
         for i in range(res.size // 2):
             normed_x = res[2 * i]
@@ -86,6 +86,6 @@ class FaceReidentification:
 
 
     def predict(self, face_frame):
-        res = self.exec_fr_net.infer(inputs={self.fr_input_blob: face_frame})
+        res = self.exec_fr_net.infer(inputs={self.fr_input_blob: face_frame})[self.fr_out_blob]
         feature_vec = res.reshape(1, 256)
         return feature_vec
