@@ -55,7 +55,7 @@ def main():
     ga_model_xml = os.path.join(dir_path, "Models/intel_models/age-gender-recognition-retail-0013.xml")
     ga_detector = GAPredictor(plugin, ga_model_xml)
 
-    fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0095.xml")
+    fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0071.xml", "Models/intel_models/landmarks-regression-retail-0009.xml")
     fr_detector = FaceReidentification(plugin, fr_model_xml)
 
     tracker = Tracker()
@@ -200,20 +200,30 @@ def main():
                         continue
 
 
+
                     try:
                         ga_face_frame= ga_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     except:
                         print("Exception Raised in Resizing Image for Gender-Age")
                         continue
 
+                    try:
+                        fr_face_frame= fr_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                    except:
+                        print("Exception Raised in Preprocessing Image for Vector Generation")
+                        continue
+
+
 
                     age, gender = ga_detector.predict(ga_face_frame)
-
+                    face_vector = fr_detector.predict(fr_face_frame)
+                    print("Generated Face Vector: ", face_vector)
                     print("Age: ", age)
                     print("Gender: ", gender)
 
                     people.age = age
                     people.gender = gender
+                    people.face_vector = face_vector
 
 
                     # Add directory for smiles and non-smiles if they don't exist

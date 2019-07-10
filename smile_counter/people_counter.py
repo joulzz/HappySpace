@@ -36,3 +36,4 @@ class People:
         self.gender = None
         self.age = 0
         self.streamed = False
+        self.face_vector = []
