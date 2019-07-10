@@ -5,7 +5,7 @@ from face_detector.face_detector import FaceDetection
 from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 from age_gender_net.determine_age_gender import GAPredictor
-from face_reidentification import FaceReidentification
+from face_reidentification.facial_landmark_mapping import FaceReidentification
 from kinesis_api.stream_add import kinesis_put_data, kinesis_batch_put
 import pandas as pd
 from skvideo.io import FFmpegWriter
