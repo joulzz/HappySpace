@@ -209,11 +209,11 @@ def main():
                         print("Exception Raised in Resizing Image for Gender-Age")
                         continue
 
-                    try:
-                        fr_face_frame= fr_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
-                    except:
-                        print("Exception Raised in Preprocessing Image for Vector Generation")
-                        continue
+                    # try:
+                    fr_face_frame= fr_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                    # except:
+                    #     print("Exception Raised in Preprocessing Image for Vector Generation")
+                    #     continue
 
 
 
