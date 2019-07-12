@@ -303,6 +303,7 @@ def main():
             kinesis_timestamp = []
             kinesis_ages = []
             kinesis_genders = []
+            kinesis_face_vectors = []
             # Uncomment to log GPS functionality
             # gps_dd = []
             for people in person_counter.people:
@@ -311,7 +312,7 @@ def main():
                     people.streamed = True
                     kinesis_ages.append(people.age)
                     kinesis_genders.append(people.gender)
-                    
+                    kinesis_face_vectors.append(people.face_vector)
                     kinesis_ids.append(people.id)
                     kinesis_smile_count.append(people.count)
                     kinesis_last_bbox.append(people.bbox)
@@ -326,6 +327,8 @@ def main():
             kinesis_df["Predicted_Gender"] = kinesis_genders
             kinesis_df["Last_Location"] = kinesis_last_bbox
             kinesis_df["Location_History"] = kinesis_location_history
+            kinesis_df["Face_Vectors"] = kinesis_face_vectors
+
             kinesis_df["Timestamp"] = kinesis_timestamp
             # df["GPS_DD"] = gps_dd
 
@@ -353,13 +356,14 @@ def main():
             timestamp = []
             ages = []
             genders = []
+            face_vectors = []
             # Uncomment to log GPS functionality
             # gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ages.append(people.age)
                 genders.append(people.gender)
-                
+                face_vectors.append(people.face_vector)
                 ids.append(people.id)
                 smile_count.append(people.count)
                 last_bbox.append(people.bbox)
@@ -375,6 +379,7 @@ def main():
             df["Last_Location"] = last_bbox
             df["Location_History"] =location_history
             df["Timestamp"] = timestamp
+            df["Face_Vectors"] = face_vectors
             # df["GPS_DD"] = gps_dd
 
        
