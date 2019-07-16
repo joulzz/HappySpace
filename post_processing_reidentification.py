@@ -6,7 +6,7 @@ def cos_similarity(X, Y):
     return np.dot(X, Y)/(np.linalg.norm(X) * np.linalg.norm(Y, axis=0))
 
 
-output_df = pd.read_csv('output.csv')
+output_df = pd.read_csv('output_reidentification.csv')
 output_df.rename(columns={'ID': 'Reference ID'}, inplace=True)
 
 for (index, row) in output_df.iterrows():
