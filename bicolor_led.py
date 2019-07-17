@@ -11,6 +11,8 @@ def straight_face(color):
     Function used to display a 8X8 Matrix Straight Face
 
     :param color: Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
+
+    Adafruit Git Repo: https://github.com/adafruit/Adafruit_Python_LED_Backpack/tree/master/Adafruit_LED_Backpack
     """
     print("Straight face - Yellow")
     display = BicolorMatrix8x8.BicolorMatrix8x8()
