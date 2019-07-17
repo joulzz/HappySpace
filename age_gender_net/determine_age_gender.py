@@ -5,6 +5,25 @@ import os
 from openvino.inference_engine import IENetwork
 
 class GAPredictor:
+    """
+       Class used to predict the Age and Gender of person using the age-gender-recognition-retail-0013 model
+
+       Attributes
+       ----------
+       gender_list:
+           List to identify genders
+       ga_net:
+           Variable used to hold the network
+       ga_input_blob:
+           Variable used to feed input to the network
+       ga_out_blob:
+       ga_size:
+       exec_ga_net:
+
+       Methods
+       -------
+
+       """
     def __init__(self, plugin, ga_model_xml):
         self.gender_list = ["female", "male"]
 
