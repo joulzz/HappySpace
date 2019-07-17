@@ -2,7 +2,9 @@ from blinkstick import blinkstick
 
 
 def main():
-    """
+
+    """ Description
+
     Script used to isolate the Blinkstick module from the main functionality. Function used to find all blinkstick leds
     and morph into random colors based on the duration value for morphing in milliseconds.
 

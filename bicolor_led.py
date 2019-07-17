@@ -7,7 +7,9 @@ sys.path.insert(0, '/home/pi/OpenVINO/inference_engine_vpu_arm/inference_engine/
 import BicolorMatrix8x8
 
 def straight_face(color):
-    """
+
+    """ Description
+
     Function used to display a 8X8 Matrix Straight Face
 
     :param color: Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
@@ -29,7 +31,8 @@ def straight_face(color):
     # time.sleep(0.1)
 
 def smiling_face(color):
-    """
+
+    """ Description
     Function used to display a 8x8 Matrix Smiling Face
 
     :param color: Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
@@ -48,7 +51,9 @@ def smiling_face(color):
     # time.sleep(0.3)
 
 def colour_gauge_update(smile_count):
-    """
+
+    """ Description
+
     Function used to display a color gauge with the bottom two rows as red, middle three as yellow and top three as green
     based on the smile count
 
@@ -89,7 +94,9 @@ def colour_gauge_update(smile_count):
 
 
 def colour_gauge(smile_count,seconds_elapsed):
-    """
+
+    """ Description
+
     Function used to display a color gauge based on smile ranges, bottom three display green, middle three yellow and top
     two red based on the smile count. Also includes, a horizontal scroll animation, if needed.
 
