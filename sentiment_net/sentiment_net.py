@@ -5,7 +5,19 @@ import os
 from openvino.inference_engine import IENetwork
 
 class SmileDetector:
+    """
+
+      Class used to predict the sentiment of the detected face
+
+    """
     def __init__(self, plugin, emo_model_xml):
+        """ Description
+        Initializes and loads the emotion recognition network into memory
+
+        :param plugin: Inference Engine Plugin
+        :param emo_model_xml: XML path of the emotions-recognition-retail-0003 model xml description
+
+        """
         self.emotions_list = ["neutral", "happy", "sad", "surprise", "anger"]
         emo_model_bin = os.path.splitext(emo_model_xml)[0] + ".bin"
         self.emo_net = IENetwork(model=emo_model_xml, weights=emo_model_bin)
@@ -25,6 +37,13 @@ class SmileDetector:
 
 
     def preprocess_image(self, face):
+        """ Description
+
+        Preprocess the image by resizing and transposing as required by the Emotion Recognition network in IE format.
+        :param face: Image representing crop area of the detected face.
+        :return: Returns processed numpy array ready to be sent for inference
+
+        """
         if face.shape[:-1] != (self.emo_size[2], self.emo_size[3]):
             face_frame = cv2.resize(face, (self.emo_size[3], self.emo_size[2]))
 
@@ -32,6 +51,15 @@ class SmileDetector:
         return face_frame
 
     def predict(self, face_frame):
+
+        """ Description
+
+        Runs the Sentiment Recognition on the input and provides if a smile was detected or not
+
+        :param face_frame: The numpy array returned by the preprocess_image function
+        :return: Returns True/False dependent on the detection of a happy emotion
+
+        """
 
         res = self.exec_emo_net.infer(inputs={self.emotion_input_blob: face_frame})
         res = res[self.emotion_out_blob]

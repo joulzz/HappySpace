@@ -36,12 +36,14 @@ def main():
     # Read parameters from JSON file. Refer to word document for parameter functions
     tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate = json_parser(sys.argv[1])
 
+    # The dongle is disconnected before the model loads
     if dongle_connection:
         print("Disconnecting via sakis3g (Main)")
         subprocess.check_output(['sudo', '/usr/bin/modem3g/sakis3g', 'disconnect'])
         sleep(10)
 
     plugin = IEPlugin(device="MYRIAD")
+
     # Create instances of required class objects
     people_tracker = PeopleTracker()
     person_counter = PeopleCounter()
@@ -70,6 +72,7 @@ def main():
     if display_flag:
         cv2.namedWindow("frame", cv2.WINDOW_FREERATIO)
 
+    # Initialise PiCamera stream and allow camera to warmup
     camera = PiCamera()
     camera.resolution = (640, 480)
     camera.framerate = 32
@@ -100,16 +103,20 @@ def main():
 
     subprocess.Popen(["python3 blinkstick_led.py"], shell=True)
 
+    # Clear video stream
     for image in stream:
         frame = image.array
         rawCapture.truncate(0)
         break
 
+    # Captures frames from the camera in a loop
     for f in stream:
         total_smile_counter = 0
 
         if is_async_mode:
+            # Grab the NumPy Array representing the image
             next_frame = f.array
+            # Clear the stream in preparation for the next
             rawCapture.truncate(0)
             if next_frame.size == 0:
                 print("Skipping Frame")
@@ -136,6 +143,7 @@ def main():
         # Initialize face detection
         # print(np.shape(current_frame),current_frame.dtype)
 
+        # Sends the next frame when the Async mode is set/ current if not
         if is_async_mode:
             face_detector.preprocessing(next_frame)
             face_detector.asyncCall(next_request_id)
@@ -186,7 +194,6 @@ def main():
 
         # person_counter.people is now updated to correspond to people in the current frame
 
-        # if frame_count % 5 ==0:
         if frame_count % (skip_frame+1) == 0:
             print("Sentiment Net Run")
             for people in person_counter.people:
@@ -215,8 +222,7 @@ def main():
                     #     print("Exception Raised in Preprocessing Image for Vector Generation")
                     #     continue
 
-
-
+                    # Predict Age and Gender of the detected face and generate face vector
                     age, gender = ga_detector.predict(ga_face_frame)
                     face_vector = fr_detector.predict(fr_face_frame)
                     print("Generated Face Vector: ", face_vector)
@@ -275,6 +281,7 @@ def main():
                         people.non_smiles += 1
                     time_face = int(time())
 
+        # Draw cumulative results on the video stream
         for person in person_counter.people:
             if person.count != None:
                 total_smile_counter += person.count
@@ -338,10 +345,7 @@ def main():
             
             kinesis_batch_put(data_upload_list)
 
-            
-
-
-            
+        # Writes person data onto a CSV file based on the running_time variable
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
         if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
@@ -381,14 +385,11 @@ def main():
             df["Face_Vectors"] = face_vectors
             # df["GPS_DD"] = gps_dd
 
-       
-
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
 
-
             if remote_upload:
-                
+                # Dongle is reconnected after the model terminates with enough time to upload the .csv file
                 if dongle_connection:
                     print("Connecting via sakis3g (Main)")
                     subprocess.check_output(['sudo','/usr/bin/modem3g/sakis3g','connect'])
@@ -459,6 +460,8 @@ def main():
 
     if write_video:
         writer.close()
+
+    # Cleanup on the exit of the script
 
     # print('Stopping LED process')
     # led_p.terminate()

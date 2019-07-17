@@ -4,6 +4,13 @@ import os
 from openvino.inference_engine import IENetwork
 
 def align_face(face_frame, landmarks):
+    """ Description
+
+    Function is used to align the detected face to increase the accuracy of the generated feature vector
+    :param face_frame: Variable that holds the detected face frame
+    :param landmarks: Variable holds the facial landmarks detected
+    :return: Returns the aligned face
+    """
    
     left_eye, right_eye, tip_of_nose, left_lip, right_lip = landmarks
     
@@ -27,6 +34,14 @@ def align_face(face_frame, landmarks):
 
 class FaceReidentification:
     def __init__(self, plugin, landmark_model_xml, fr_model_xml):
+
+        """ Description
+
+        :param plugin: Inference Engine Plugin
+        :param landmark_model_xml:  XML path of the landmarks-regression-retail-0009 model xml description
+        :param fr_model_xml: XML path of the model face-reidentification-retail-0071 xml description
+
+        """
         landmark_model_bin = os.path.splitext(landmark_model_xml)[0] + ".bin"
         self.landmark_net = IENetwork(model=landmark_model_xml, weights=landmark_model_bin)
 
@@ -61,6 +76,11 @@ class FaceReidentification:
 
     
     def preprocess_image(self, face):
+        """ Description
+
+        Function preprocesses the incoming image and aligns it for a more accurate face vector result
+        :return:  Returns the aligned transposed face
+        """
         if face.shape[:-1] != (self.landmark_size[2], self.landmark_size[3]):
             face_frame = cv2.resize(face, (self.landmark_size[3], self.landmark_size[2]))
 
@@ -86,6 +106,14 @@ class FaceReidentification:
 
 
     def predict(self, face_frame):
+
+        """ Description
+
+        Runs the Face Reidentification model on the input image and provides a (1, 256, 1, 1) output feature vector
+
+        :return: Returns the predicted face vector
+
+        """
         res = self.exec_fr_net.infer(inputs={self.fr_input_blob: face_frame})[self.fr_out_blob]
         feature_vec = res.reshape(1, 256)
         return feature_vec

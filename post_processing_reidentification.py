@@ -26,7 +26,6 @@ indices = output_df.index.values.tolist()
 
 output_df['ID']= output_df['Reference ID']
 
-print(output_df)
 for target,feature in itertools.combinations(indices, 2):
     print(target," ",feature)
     similarity = cos_similarity(output_df.loc[target,'Face_Vectors'], output_df.loc[feature,'Face_Vectors'])
@@ -38,7 +37,7 @@ for target,feature in itertools.combinations(indices, 2):
         output_df.loc[feature, 'ID'] = output_df.loc[feature, 'ID']
 
 print(output_df)
-
+print('Removing Duplicates')
 unique_id_df = output_df.drop_duplicates(subset=['ID'], keep='last', inplace=False).reset_index(drop=True)
 
 print(unique_id_df)

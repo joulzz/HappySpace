@@ -1,4 +1,7 @@
 class PeopleTracker:
+    """
+    Class to record Person Data
+    """
     def __init__(self):
         self.total_detected_bboxes = []
         self.previous_frame_bboxes = []
