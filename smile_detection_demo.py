@@ -242,7 +242,6 @@ def main():
 
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict(face_frame):
-                        # Displaying smiling face, Change color using [BicolorMatrix8x8.RED, BicolorMatrix8x8.GREEN, BicolorMatrix8x8.YELLOW]
                         # smiling_face(BicolorMatrix8x8.GREEN)
                         tb2 = cv2.getTickCount()
                         time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
