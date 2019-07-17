@@ -3,6 +3,14 @@ import numpy as np
 import itertools
 
 def cos_similarity(X, Y):
+
+    """ Description
+
+    Functions maps the cosine similarity among the face feature vectors retrieved from detected faces
+
+    :return: Returns the similarity mapped using the cosine of the angle between two vectors projected
+    in a multi-dimensional space
+    """
     X = X.strip("[").strip("]")
     Y = Y.strip("[").strip("]")
     X = np.fromstring(X, sep=' ')

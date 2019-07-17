@@ -17,8 +17,7 @@ class GAPredictor:
        ga_input_blob:
            The name of the node in the network where the image is passed as input
        ga_out_blob:
-            The name of the node in the network where the result vector is received as outpuit
-
+            The name of the node in the network where the result vector is received as output
        ga_size:
             Size of the image expected at the input node
        exec_ga_net:

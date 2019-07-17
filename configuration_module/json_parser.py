@@ -2,6 +2,13 @@ import json
 
 
 def json_parser(json_path):
+
+    """ Description
+
+    Functions loads all variables from the configuration.json and returns them to be unpacked in the main script
+
+    :return: Returning variables to the main script set in the configuration.json
+    """
     with open(json_path, "r") as fp:
         json_config = json.load(fp)
 

@@ -21,6 +21,11 @@ def timestamp_to_seconds(output_df, index):
 
 
 if __name__ == "__main__":
+
+    # Script utilises a post processing logic to replace ids that satisfy the conditions less than Range and lie within
+    # Turnover Time to umbrella under the same ids.
+
+
     output_df = pd.read_csv('2018-11-17.csv')
     # Node- (x,y) center of the face bounding box
     output_df['Node'] = pd.DataFrame(output_df['Last_Location'].values.tolist())
