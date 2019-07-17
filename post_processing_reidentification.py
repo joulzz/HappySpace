@@ -11,6 +11,7 @@ def cos_similarity(X, Y):
     :return: Returns the similarity mapped using the cosine of the angle between two vectors projected
     in a multi-dimensional space
     """
+    
     X = X.strip("[").strip("]")
     Y = Y.strip("[").strip("]")
     X = np.fromstring(X, sep=' ')
@@ -30,7 +31,7 @@ for target,feature in itertools.combinations(indices, 2):
     print(target," ",feature)
     similarity = cos_similarity(output_df.loc[target,'Face_Vectors'], output_df.loc[feature,'Face_Vectors'])
     if similarity > 0.9:
-        print ("Replaced ID at Index: ", target)
+        print ("Replaced ID at Index: ", feature, "Reference_ID:",output_df.loc[feature,'Reference ID'])
         output_df.loc[feature, 'ID'] = output_df.loc[target, 'ID']
         output_df.loc[feature, 'Location_History'] += output_df.loc[target, 'Last_Location']
     else:
