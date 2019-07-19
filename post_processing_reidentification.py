@@ -24,13 +24,20 @@ def cos_similarity(X, Y):
 output_df = pd.read_csv('output_reidentification.csv')
 output_df.rename(columns={'ID': 'Reference ID'}, inplace=True)
 indices = output_df.index.values.tolist()
+deleted_row_index=[]
+
+for output_df_index in indices:
+    if output_df.loc[output_df_index,'Face_Vectors'] == '[]':
+        indices.remove(output_df_index)
+        output_df.drop(output_df_index, inplace=True)
+print(indices)
 
 output_df['ID']= output_df['Reference ID']
 
 for target,feature in itertools.combinations(indices, 2):
     print(target," ",feature)
     similarity = cos_similarity(output_df.loc[target,'Face_Vectors'], output_df.loc[feature,'Face_Vectors'])
-    if similarity > 0.9:
+    if similarity > 0.7:
         print ("Replaced ID at Index: ", feature, "Reference_ID:",output_df.loc[feature,'Reference ID'])
         output_df.loc[feature, 'ID'] = output_df.loc[target, 'ID']
         output_df.loc[feature, 'Location_History'] += output_df.loc[target, 'Last_Location']
