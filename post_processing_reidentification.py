@@ -20,8 +20,8 @@ def cos_similarity(X, Y):
     print(np.dot(X, Y)/(np.linalg.norm(X) * np.linalg.norm(Y, axis=0)))
     return np.dot(X, Y)/(np.linalg.norm(X) * np.linalg.norm(Y, axis=0))
 
-
-output_df = pd.read_csv('output_live_test.csv')
+csv_file_path = 'output_live_test.csv'
+output_df = pd.read_csv(csv_file_path)
 output_df.rename(columns={'ID': 'Reference ID'}, inplace=True)
 indices = output_df.index.values.tolist()
 deleted_row_index=[]
@@ -47,5 +47,5 @@ for target,feature in itertools.combinations(indices, 2):
 print(output_df)
 print('Removing Duplicates')
 unique_id_df = output_df.drop_duplicates(subset=['ID'], keep='last', inplace=False).reset_index(drop=True)
-
 print(unique_id_df)
+unique_id_df.to_csv(csv_file_path)
