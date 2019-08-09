@@ -101,7 +101,7 @@ def main():
     average_fps = 0
     time_face = 0
 
-    subprocess.Popen(["python3 blinkstick_led.py"], shell=True)
+    # subprocess.Popen(["python3 blinkstick_led.py"], shell=True)
 
     # Clear video stream
     for image in stream:
@@ -462,9 +462,6 @@ def main():
         writer.close()
 
     # Cleanup on the exit of the script
-
-    # print('Stopping LED process')
-    # led_p.terminate()
     stream.close()
     rawCapture.close()
     camera.close()
