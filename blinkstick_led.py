@@ -14,6 +14,7 @@ def main():
     """
     try:
         try:
+            print("Running Blinkstick")
             for led in blinkstick.find_all():
                 led.set_mode(3)
         except AttributeError:
@@ -21,6 +22,7 @@ def main():
         while True:
             led.morph(name="random",duration=10000)
     except (KeyboardInterrupt, SystemExit):
+        print("Switching off Blinkstick")
         for led in blinkstick.find_all():
             led.turn_off()
 
