@@ -20,7 +20,7 @@ def main():
         except AttributeError:
             return None
         while True:
-            led.morph(name="random",duration=10000)
+            led.set_color(red=100, green=100, blue=100, hex='#25FFFF')
     except (KeyboardInterrupt, SystemExit):
         print("Switching off Blinkstick")
         for led in blinkstick.find_all():
