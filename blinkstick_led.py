@@ -20,7 +20,13 @@ def main():
         except AttributeError:
             return None
         while True:
-            led.set_color(red=100, green=100, blue=100, hex='#25FFFF')
+            brightness = 20
+            r, g, b = led._hex_to_rgb("#25FFFF")
+            r = (brightness / 100.0 * r)
+            g = (brightness / 100.0 * g)
+            b = (brightness / 100.0 * b)
+            led.set_color(red=r, green=g, blue=b)
+            # led.set_color(red=100, green=100, blue=100, hex='#25FFFF')
     except (KeyboardInterrupt, SystemExit):
         print("Switching off Blinkstick")
         for led in blinkstick.find_all():
