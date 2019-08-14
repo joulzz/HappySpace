@@ -198,9 +198,6 @@ def main():
             print("Sentiment Net Run")
             for people in person_counter.people:
                 if people.current:
-                    tb1 = cv2.getTickCount()
-                    time_blinkstick = (cv2.getTickCount() - tb1) / cv2.getTickFrequency()
-                    # subprocess.check_output(['sudo', 'blinkstick','--blink','yellow'])
                     face = people.bbox
                     try:
                         face_frame= smile_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
@@ -248,11 +245,6 @@ def main():
 
                     # Classify and save as smiles and non-smiles
                     if smile_detector.predict(face_frame):
-                        # smiling_face(BicolorMatrix8x8.GREEN)
-                        tb2 = cv2.getTickCount()
-                        time_blinkstick += (cv2.getTickCount() - tb2) / cv2.getTickFrequency()
-                        print("Blinkstick Total time: {0} ms".format(time_blinkstick * 1000))
-                        # subprocess.check_output(['sudo', 'blinkstick','--blink', 'green'])
                         # Check flag 'write_images' to then save images to the images folder in current directory
                         if frame_count % (calibration_smile+1) == 0:
                             if write_images:
