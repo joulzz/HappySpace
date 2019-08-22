@@ -222,7 +222,7 @@ def main():
                     # Predict Age and Gender of the detected face and generate face vector
                     age, gender = ga_detector.predict(ga_face_frame)
                     face_vector = fr_detector.predict(fr_face_frame)
-                    print("Generated Face Vector: ", face_vector)
+                    # print("Generated Face Vector: ", face_vector)
                     print("Age: ", age)
                     print("Gender: ", gender)
 

@@ -93,10 +93,10 @@ class FaceReidentification:
             x_lm = face_frame.shape[1] * normed_x
             y_lm = face_frame.shape[0] * normed_y
             facial_landmarks[i] = (x_lm, y_lm)
-        cv2.imshow('before_align', face)
+        # cv2.imshow('before_align', face)
 
         aligned_face = align_face(face, facial_landmarks)
-        cv2.imshow('after_align', aligned_face)
+        # cv2.imshow('after_align', aligned_face)
         cv2.waitKey(10)
         if aligned_face.shape[:-1] != (self.fr_size[2], self.fr_size[3]):
             aligned_face_frame = cv2.resize(face, (self.fr_size[3], self.fr_size[2]))
