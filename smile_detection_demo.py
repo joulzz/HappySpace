@@ -34,7 +34,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate, face_vector_display = json_parser(sys.argv[1])
 
     # The dongle is disconnected before the model loads
     if dongle_connection:
@@ -57,10 +57,11 @@ def main():
     ga_model_xml = os.path.join(dir_path, "Models/intel_models/age-gender-recognition-retail-0013.xml")
     ga_detector = GAPredictor(plugin, ga_model_xml)
 
-    fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0071.xml")
-    landmarks_model_xml = os.path.join(dir_path, "Models/intel_models/landmarks-regression-retail-0009.xml")
+    if face_vector_display:
+        fr_model_xml = os.path.join(dir_path, "Models/intel_models/face-reidentification-retail-0071.xml")
+        landmarks_model_xml = os.path.join(dir_path, "Models/intel_models/landmarks-regression-retail-0009.xml")
 
-    fr_detector = FaceReidentification(plugin, landmarks_model_xml, fr_model_xml)
+        fr_detector = FaceReidentification(plugin, landmarks_model_xml, fr_model_xml)
 
     tracker = Tracker()
     s3 = boto3.resource('s3')
@@ -214,21 +215,24 @@ def main():
                         continue
 
                     # try:
-                    fr_face_frame= fr_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
+                    if face_vector_display:
+                        fr_face_frame= fr_detector.preprocess_image(frame[face[0][1]: face[1][1], face[0][0]: face[1][0]])
                     # except:
                     #     print("Exception Raised in Preprocessing Image for Vector Generation")
                     #     continue
 
                     # Predict Age and Gender of the detected face and generate face vector
                     age, gender = ga_detector.predict(ga_face_frame)
-                    face_vector = fr_detector.predict(fr_face_frame)
+                    if face_vector_display:
+                        face_vector = fr_detector.predict(fr_face_frame)
                     # print("Generated Face Vector: ", face_vector)
                     print("Age: ", age)
                     print("Gender: ", gender)
 
                     people.age = age
                     people.gender = gender
-                    people.face_vector = face_vector
+                    if face_vector_display:
+                        people.face_vector = face_vector
 
 
                     # Add directory for smiles and non-smiles if they don't exist
@@ -325,7 +329,8 @@ def main():
             kinesis_df["Predicted_Gender"] = kinesis_genders
             kinesis_df["Last_Location"] = kinesis_last_bbox
             kinesis_df["Location_History"] = kinesis_location_history
-            kinesis_df["Face_Vectors"] = kinesis_face_vectors
+            if face_vector_display:
+                kinesis_df["Face_Vectors"] = kinesis_face_vectors
 
             kinesis_df["Timestamp"] = kinesis_timestamp
             # df["GPS_DD"] = gps_dd
@@ -351,14 +356,16 @@ def main():
             timestamp = []
             ages = []
             genders = []
-            face_vectors = []
+            if face_vector_display:
+                face_vectors = []
             # Uncomment to log GPS functionality
             # gps_dd = []
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ages.append(people.age)
                 genders.append(people.gender)
-                face_vectors.append(people.face_vector)
+                if face_vector_display:
+                    face_vectors.append(people.face_vector)
                 ids.append(people.id)
                 smile_count.append(people.count)
                 last_bbox.append(people.bbox)
@@ -374,7 +381,8 @@ def main():
             df["Last_Location"] = last_bbox
             df["Location_History"] =location_history
             df["Timestamp"] = timestamp
-            df["Face_Vectors"] = face_vectors
+            if face_vector_display:
+                df["Face_Vectors"] = face_vectors
             # df["GPS_DD"] = gps_dd
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
