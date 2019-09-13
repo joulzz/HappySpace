@@ -67,6 +67,10 @@ def json_parser(json_path):
     else:
         calibration_nonsmile = False
 
+    if "kinesis_stream" in json_config:
+        kinesis_stream = json_config["kinesis_stream"]
+    else:
+        kinesis_stream = False
 
     if "kinesis_upload_rate" in json_config:
         kinesis_upload_rate = json_config["kinesis_upload_rate"]
@@ -79,4 +83,4 @@ def json_parser(json_path):
         face_vector_display = False
 
 
-    return tinkerboard_id, skip_frame, display_flag, remote_upload, dongle_connection, running_time, min_face, max_face, blur_images, calibration_smile,calibration_nonsmile, kinesis_upload_rate, face_vector_display
+    return tinkerboard_id, skip_frame, display_flag, remote_upload, dongle_connection, running_time, min_face, max_face, blur_images, calibration_smile,calibration_nonsmile,kinesis_stream, kinesis_upload_rate, face_vector_display
