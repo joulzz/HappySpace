@@ -34,7 +34,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate, face_vector_display = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate, face_vector_display = json_parser(sys.argv[1])
 
     # The dongle is disconnected before the model loads
     if dongle_connection:
@@ -80,9 +80,6 @@ def main():
     rawCapture = PiRGBArray(camera, size=(640, 480))
     stream = camera.capture_continuous(rawCapture, format="bgr", use_video_port=True)
     sleep(2)
-
-    if write_video:
-        writer = FFmpegWriter(os.path.join(dir_path, "output.mp4"))
 
     previous_frame = []
     frame_count = 0
@@ -439,9 +436,6 @@ def main():
             if ch == 27:
                 break
 
-        if write_video:
-            writer_image = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
-            writer.writeFrame(writer_image)
 
         if frame_count % 30 == 0:
             average_fps = 1 / (inference_time_sum / 30)
@@ -458,8 +452,6 @@ def main():
                                                                                    (time_elapsed - start_time) / 100))
         # gc.collect()
 
-    if write_video:
-        writer.close()
 
     # Cleanup on the exit of the script
     stream.close()
