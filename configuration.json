@@ -7,7 +7,6 @@
   "min_face": [30, 30],
   "max_face": [400, 400],
   "running_time": 8,
-  "write_images": 1,
   "blur_images": [0,15],
   "calibration_smile":100,
   "calibration_nonsmile":100,

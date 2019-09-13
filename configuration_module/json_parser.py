@@ -52,11 +52,6 @@ def json_parser(json_path):
     else:
         max_face = []
 
-    if "write_images" in json_config:
-        write_images = json_config["write_images"]
-    else:
-        write_images = False
-
     if "blur_images" in json_config:
         blur_images = json_config["blur_images"]
     else:
@@ -84,4 +79,4 @@ def json_parser(json_path):
         face_vector_display = False
 
 
-    return tinkerboard_id, skip_frame, display_flag, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile,calibration_nonsmile, kinesis_upload_rate, face_vector_display
+    return tinkerboard_id, skip_frame, display_flag, remote_upload, dongle_connection, running_time, min_face, max_face, blur_images, calibration_smile,calibration_nonsmile, kinesis_upload_rate, face_vector_display
