@@ -398,7 +398,7 @@ def main():
                         for file in files:
                             full_path = os.path.join(subdir, file)
                             with open(full_path, 'rb') as data:
-                                s3.Bucket('smile-log').put_object(Key='{0}/{1}_smile_images/{2}'.format(tinkerboard_id,strftime("%Y-%m-%d",gmtime()),full_path[len(image_path) + 1:]),Body=data)
+                                s3.Bucket('smile-log').put_object(Key='{0}/{1}/{2}_smile_images/{3}'.format(tinkerboard_id,strftime("%B-%Y",gmtime()),strftime("%Y-%m-%d",gmtime()),full_path[len(image_path) + 1:]),Body=data)
 
                 if os.path.exists('non_smiles_images'):
                     image_path = os.path.join(dir_path, "non_smiles_images")
@@ -407,7 +407,7 @@ def main():
                             full_path = os.path.join(subdir, file)
                             with open(full_path, 'rb') as data:
                                 s3.Bucket('smile-log').put_object(
-                                    Key='{0}/{1}_non_smiles_images/{2}'.format(tinkerboard_id,strftime("%Y-%m-%d", gmtime()),full_path[len(image_path) + 1:]),Body=data)
+                                    Key='{0}/{1}/{2}_non_smiles_images/{3}'.format(tinkerboard_id,strftime("%B-%Y",gmtime()),strftime("%Y-%m-%d", gmtime()),full_path[len(image_path) + 1:]),Body=data)
             break
 
         frame_count += 1
