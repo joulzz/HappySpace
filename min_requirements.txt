@@ -10,3 +10,4 @@ tensorboard==1.6.0
 tensorflow==1.6.0
 tflearn==0.3.2
 boto3
+sqlalchemy
