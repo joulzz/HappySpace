@@ -34,7 +34,7 @@ def fetch():
 
 def push_data(request_params):
     query = db.insert(metrics) 
-    values_list = [request_params]
+    values_list = request_params
     results = connection.execute(query,values_list)
     print("Results of Pushed Data: ", results)
 
