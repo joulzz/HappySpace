@@ -172,8 +172,3 @@ if __name__ == "__main__":
     response = requests.request('POST', url, headers = headers, data = json.dumps(db_entries, default=str), allow_redirects=False)
     print(response.text)   
         
-
-
-
-
-

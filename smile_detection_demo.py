@@ -14,6 +14,7 @@ from configuration_module.json_parser import json_parser
 from time import gmtime, strftime, time,sleep
 import sys
 import boto3
+import requests
 import os
 from PIL import Image
 import PIL.ImageOps
@@ -23,6 +24,7 @@ from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
+URL = 'http://52.21.129.52/upload'
 
 def main():
 
@@ -87,7 +89,7 @@ def main():
     previous_frame = []
     frame_count = 0
     kinesis_frame_count = 0
-
+    uploaded_entries = []
     # _, frame = cap.read()
 
 
@@ -374,8 +376,9 @@ def main():
                 # Uncomment to log GPS functionality
                 # gps_dd.append(people.gps)
 
-            df["ID"] = ids
-            df["Smiles_Detected"] = smile_count
+            df["Frame_ID"] = ids
+            df["Sensor_ID"] = tinkerboard_id
+            df["Positive_Experience_Score"] = smile_count
             df["Predicted_Age"] = ages
             df["Predicted_Gender"] = genders
             df["Last_Location"] = last_bbox
@@ -387,6 +390,31 @@ def main():
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
+
+
+            db_entries = []
+
+            for (index, row) in df.iterrows():
+                request_payload = {}
+                request_payload["Frame_ID"] = df["Frame_ID"]
+                request_payload["Sensor_ID"] = df["Sensor_ID"]
+                request_payload["Positive_Experience_Score"] = df["Positive_Experience_Score"]
+                request_payload["Predicted_Age"] = df["Predicted_Age"]
+                request_payload["Predicted_Gender"] = df["Predicted_Gender"]
+                request_payload["Last_Location"] = df["Last_Location"]
+                request_payload["Location_History"] = df["Location_History"]
+                request_payload["Timestamp"] = df["Timestamp"]
+                if request_payload not in uploaded_entries:
+                    db_entries.append(request_payload)
+
+            uploaded_entries += db_entries 
+
+                
+            headers = {
+            'Content-Type': 'application/json'
+            }
+            response = requests.request('POST', URL, headers = headers, data = json.dumps(db_entries, default=str), allow_redirects=False)
+            print(response.text)   
 
             if remote_upload:
                 # Dongle is reconnected after the model terminates with enough time to upload the .csv file
