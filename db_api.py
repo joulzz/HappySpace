@@ -4,7 +4,6 @@ app = Flask(__name__)
 import json
 
 engine = db.create_engine('mysql://admin:piedpiper@dashboard-db.cabpqqhktlmn.us-east-1.rds.amazonaws.com/HappySpace_Metrics')
-connection = engine.connect()
 metadata = db.MetaData()
 
 @app.route('/upload', methods=['POST'])
@@ -27,6 +26,8 @@ def fetch():
 
 
 def push_data(request_params):
+    connection = engine.connect()
+
     metrics = db.Table('LiveData', metadata, autoload=True, autoload_with=engine)
 
     query = db.insert(metrics) 
@@ -36,9 +37,10 @@ def push_data(request_params):
 
 
 def send_unit_data(view):
+    connection = engine.connect()
     metrics = db.Table(view, metadata, autoload=True, autoload_with=engine)
     query = db.select([metrics])
     results = connection.execute(query)
     return json.dumps([(dict(row.items())) for row in results], default=str)
     
-app.run()
+app.run(host='0.0.0.0', port=80)
