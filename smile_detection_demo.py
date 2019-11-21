@@ -6,7 +6,6 @@ from smile_counter.people_counter import PeopleTracker, PeopleCounter, People
 from sentiment_net.sentiment_net import SmileDetector
 from age_gender_net.determine_age_gender import GAPredictor
 from face_reidentification.facial_landmark_mapping import FaceReidentification
-from kinesis_api.stream_add import kinesis_put_data, kinesis_batch_put
 import pandas as pd
 from skvideo.io import FFmpegWriter
 import subprocess
@@ -36,7 +35,7 @@ def main():
 
 
     # Read parameters from JSON file. Refer to word document for parameter functions
-    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, kinesis_rate, face_vector_display = json_parser(sys.argv[1])
+    tinkerboard_id, skip_frame, display_flag, write_video, remote_upload, dongle_connection, running_time, min_face, max_face, write_images, blur_images, calibration_smile, calibration_nonsmile, face_vector_display = json_parser(sys.argv[1])
 
     # The dongle is disconnected before the model loads
     if dongle_connection:
@@ -88,8 +87,6 @@ def main():
 
     previous_frame = []
     frame_count = 0
-    kinesis_frame_count = 0
-    uploaded_entries = []
     # _, frame = cap.read()
 
 
@@ -295,55 +292,6 @@ def main():
                 if person.gender != None:
                     cv2.putText(draw_frame, "Gender: {0}".format(person.gender), (person.bbox[0][0], person.bbox[1][1] + 30), cv2.FONT_HERSHEY_TRIPLEX, 0.75, (0, 255, 0), 2)
 
-
-
-        if kinesis_frame_count  == kinesis_rate:
-            kinesis_frame_count = 0
-            kinesis_df = pd.DataFrame()
-            kinesis_ids = []
-            kinesis_smile_count = []
-            kinesis_last_bbox = []
-            kinesis_location_history = []
-            kinesis_timestamp = []
-            kinesis_ages = []
-            kinesis_genders = []
-            kinesis_face_vectors = []
-            # Uncomment to log GPS functionality
-            # gps_dd = []
-            for people in person_counter.people:
-                people.history.append(people.bbox)
-                if not(people.streamed):
-                    people.streamed = True
-                    kinesis_ages.append(people.age)
-                    kinesis_genders.append(people.gender)
-                    kinesis_face_vectors.append(people.face_vector)
-                    kinesis_ids.append(people.id)
-                    kinesis_smile_count.append(people.count)
-                    kinesis_last_bbox.append(people.bbox)
-                    kinesis_location_history.append(people.history)
-                    kinesis_timestamp.append(people.timestamp)
-                # Uncomment to log GPS functionality
-                # gps_dd.append(people.gps)
-
-            kinesis_df["ID"] = kinesis_ids
-            kinesis_df["Smiles_Detected"] = kinesis_smile_count
-            kinesis_df["Predicted_Age"] = kinesis_ages
-            kinesis_df["Predicted_Gender"] = kinesis_genders
-            kinesis_df["Last_Location"] = kinesis_last_bbox
-            kinesis_df["Location_History"] = kinesis_location_history
-            if face_vector_display:
-                kinesis_df["Face_Vectors"] = kinesis_face_vectors
-
-            kinesis_df["Timestamp"] = kinesis_timestamp
-            # df["GPS_DD"] = gps_dd
-
-            data_upload_list = []
-            for i in range(len(kinesis_df.index)):
-                row_entry = ("|").join([str(val) for val in kinesis_df.iloc[i][:].values.tolist()])
-                data_upload_list.append(row_entry + "\n")
-            
-            kinesis_batch_put(data_upload_list)
-
         # Writes person data onto a CSV file based on the running_time variable
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
@@ -445,7 +393,6 @@ def main():
             break
 
         frame_count += 1
-        kinesis_frame_count += 1
 
         original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)

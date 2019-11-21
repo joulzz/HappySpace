@@ -12,6 +12,5 @@
   "blur_images": [0,15],
   "calibration_smile":100,
   "calibration_nonsmile":100,
-  "kinesis_upload_rate": 10,
   "face_vector_display": 1
 }
