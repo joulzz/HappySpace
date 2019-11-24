@@ -23,7 +23,7 @@ from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
-URL = 'http://52.21.129.52/upload'
+URL = 'https://api.happyspace.io/upload'
 
 def main():
 
