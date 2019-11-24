@@ -28,7 +28,7 @@ URL = 'http://52.21.129.52/upload'
 def main():
 
     dir_path = os.path.dirname(os.path.abspath(__file__))
-
+    uploaded_entries = []
     if len(sys.argv)!= 2:
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
