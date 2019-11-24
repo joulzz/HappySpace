@@ -364,6 +364,8 @@ def main():
             headers = {
             'Content-Type': 'application/json'
             }
+            
+            print("Pushing to DB:", db_entries)
             response = requests.request('POST', URL, headers = headers, data = json.dumps(db_entries, default=str), allow_redirects=False)
             print(response.text)   
 
