@@ -307,6 +307,7 @@ def main():
             timestamp = []
             ages = []
             genders = []
+            tinkerboard_ids = []
             if face_vector_display:
                 face_vectors = []
             # Uncomment to log GPS functionality
@@ -314,6 +315,7 @@ def main():
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ages.append(people.age)
+                tinkerboard_ids.append(tinkerboard_id)
                 genders.append(people.gender)
                 if face_vector_display:
                     face_vectors.append(people.face_vector)
@@ -324,9 +326,9 @@ def main():
                 timestamp.append(people.timestamp)
                 # Uncomment to log GPS functionality
                 # gps_dd.append(people.gps)
-
+        
             df["Frame_ID"] = ids
-            df["Sensor_ID"] = tinkerboard_id
+            df["Sensor_ID"] = tinkerboard_ids
             df["Positive_Experience_Score"] = smile_count
             df["Predicted_Age"] = ages
             df["Predicted_Gender"] = genders
