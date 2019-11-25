@@ -347,14 +347,14 @@ def main():
 
             for (index, row) in df.iterrows():
                 request_payload = {}
-                request_payload["Frame_ID"] = df["Frame_ID"]
-                request_payload["Sensor_ID"] = df["Sensor_ID"]
-                request_payload["Positive_Experience_Score"] = df["Positive_Experience_Score"]
-                request_payload["Predicted_Age"] = df["Predicted_Age"]
-                request_payload["Predicted_Gender"] = df["Predicted_Gender"]
-                request_payload["Last_Location"] = df["Last_Location"]
-                request_payload["Location_History"] = df["Location_History"]
-                request_payload["Timestamp"] = df["Timestamp"]
+                request_payload["Frame_ID"] = row["Frame_ID"]
+                request_payload["Sensor_ID"] = row["Sensor_ID"]
+                request_payload["Positive_Experience_Score"] = row["Positive_Experience_Score"]
+                request_payload["Predicted_Age"] = row["Predicted_Age"]
+                request_payload["Predicted_Gender"] = row["Predicted_Gender"]
+                request_payload["Last_Location"] = row["Last_Location"]
+                request_payload["Location_History"] = row["Location_History"]
+                request_payload["Timestamp"] = row["Timestamp"]
                 if request_payload not in uploaded_entries:
                     db_entries.append(request_payload)
 
