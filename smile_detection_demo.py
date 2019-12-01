@@ -347,7 +347,7 @@ def main():
 
             for (index, row) in df.iterrows():
                 request_payload = {}
-                request_payload["Frame_ID"] =int(row["Frame_ID"]))
+                request_payload["Frame_ID"] =int(row["Frame_ID"])
                 request_payload["Sensor_ID"] = str(row["Sensor_ID"])
                 request_payload["Positive_Experience_Score"] =float(row["Positive_Experience_Score"])
                 request_payload["Predicted_Age"] = float(row["Predicted_Age"])
