@@ -296,7 +296,7 @@ def main():
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
        
-        if (int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time) or (frame_count % 100 == 0 and frame_count != 0):
+        if (int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time):
             frame_count = 0
             # Write to CSV, Create different write parameters
             df = pd.DataFrame()
