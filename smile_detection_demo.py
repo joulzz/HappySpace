@@ -366,7 +366,6 @@ def main():
             break
 
         frame_count += 1
-        kinesis_frame_count += 1
 
         original = draw_frame
         cv2.putText(original, "Total Smiles: {0}".format(total_smile_counter), (0, 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
