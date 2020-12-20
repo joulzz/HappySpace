@@ -4,7 +4,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import ast
+import json
 import time
+import requests
+url = 'http://52.21.129.52/upload'
+import sys
 
 def center_node(x):
     x = ast.literal_eval(x)
@@ -26,7 +30,7 @@ if __name__ == "__main__":
     # Turnover Time to umbrella under the same ids.
 
 
-    output_df = pd.read_csv('2018-11-17.csv')
+    output_df = pd.read_csv('2019-09-30.csv')
     # Node- (x,y) center of the face bounding box
     output_df['Node'] = pd.DataFrame(output_df['Last_Location'].values.tolist())
     output_df['Node'] = output_df['Node'].apply(center_node)
@@ -133,7 +137,38 @@ if __name__ == "__main__":
     plt.savefig(str(ts) + '_3dplot.png')
 
 
+    #  Remove NaN values
+    unique_id_df.fillna(0, inplace=True)
+
+    db_entries = []
+    for (index, row) in unique_id_df.iterrows():
+        request_payload = {}
+        request_payload["sociability"] = int(unique_id_df.loc[index, 'Sociability'])
+        request_payload["smiles_detected"] = float(unique_id_df.loc[index, 'Smiles_Detected'])
+        request_payload["unique_id"] = int(unique_id_df.loc[index, 'ID'])
+        request_payload["gender"] = str(unique_id_df.loc[index, 'Predicted_Gender'])
+        request_payload["age_group"] = str(unique_id_df.loc[index, 'Predicted_Age'])
+        request_payload["ethnic_group"] = "unknown"
+        request_payload["timestamp"] = str(unique_id_df.loc[index, 'Timestamp'])
+        request_payload["location_history"] = str(unique_id_df.loc[index, 'Location_History'])
+        request_payload["location"] = str(unique_id_df.loc[index, 'Last_Location'])
+        request_payload["sociability_score"] = float(unique_id_df.loc[index, 'Sociability Score'])
+        request_payload["relaxed_score"] = float(unique_id_df.loc[index, 'Relaxed Score'])
+        request_payload["relaxed"] = int(unique_id_df.loc[index, 'Relaxed'])
+        request_payload["dynamic_score"] = float(len(unique_id_df))
+        request_payload["happiness_score"] = output_df['Smiles_Detected'].sum()
+
+        if len(sys.argv) == 1:
+            request_payload["unit_id"] = int(sys.argv[1])
+        else:
+            request_payload["unit_id"] = 1
+    
+        db_entries.append(request_payload)
 
 
-
-
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    response = requests.request('POST', url, headers = headers, data = json.dumps(db_entries, default=str), allow_redirects=False)
+    print(response.text)   
+        

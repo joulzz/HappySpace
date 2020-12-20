@@ -13,6 +13,7 @@ from configuration_module.json_parser import json_parser
 from time import gmtime, strftime, time,sleep
 import sys
 import boto3
+import requests
 import os
 from PIL import Image
 import PIL.ImageOps
@@ -22,11 +23,12 @@ from picamera.array import PiRGBArray
 # from gps_module import read_gps_data
 # from bicolor_led import smiling_face,straight_face,colour_gauge,colour_gauge_update
 # from Adafruit_LED_Backpack import BicolorMatrix8x8
+URL = 'https://api.happyspace.io/upload'
 
 def main():
 
     dir_path = os.path.dirname(os.path.abspath(__file__))
-
+    uploaded_entries = []
     if len(sys.argv)!= 2:
         print("\n Give path to the JSON Configuration File\n Example: python smile_detection_demo.py <full path to json file>")
         return
@@ -85,7 +87,6 @@ def main():
 
     previous_frame = []
     frame_count = 0
-
     # _, frame = cap.read()
 
 
@@ -294,7 +295,8 @@ def main():
         # Writes person data onto a CSV file based on the running_time variable
         inf_time = (cv2.getTickCount() - t0)/ cv2.getTickFrequency()
         time_elapsed = int(strftime("%H%M", gmtime()))
-        if int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time:
+       
+        if (int((time_elapsed - start_time) / 100) > running_time or (time_elapsed - start_time) == -24 + running_time):
             frame_count = 0
             # Write to CSV, Create different write parameters
             df = pd.DataFrame()
@@ -305,6 +307,7 @@ def main():
             timestamp = []
             ages = []
             genders = []
+            tinkerboard_ids = []
             if face_vector_display:
                 face_vectors = []
             # Uncomment to log GPS functionality
@@ -312,6 +315,7 @@ def main():
             for people in person_counter.people:
                 people.history.append(people.bbox)
                 ages.append(people.age)
+                tinkerboard_ids.append(tinkerboard_id)
                 genders.append(people.gender)
                 if face_vector_display:
                     face_vectors.append(people.face_vector)
@@ -322,9 +326,10 @@ def main():
                 timestamp.append(people.timestamp)
                 # Uncomment to log GPS functionality
                 # gps_dd.append(people.gps)
-
-            df["ID"] = ids
-            df["Smiles_Detected"] = smile_count
+        
+            df["Frame_ID"] = ids
+            df["Sensor_ID"] = tinkerboard_ids
+            df["Positive_Experience_Score"] = smile_count
             df["Predicted_Age"] = ages
             df["Predicted_Gender"] = genders
             df["Last_Location"] = last_bbox
@@ -336,6 +341,33 @@ def main():
 
             df.to_csv(os.path.join(dir_path, "output.csv"), index=False)
             print("Wrote to CSV")
+
+
+            db_entries = []
+
+            for (index, row) in df.iterrows():
+                request_payload = {}
+                request_payload["Frame_ID"] =int(row["Frame_ID"])
+                request_payload["Sensor_ID"] = str(row["Sensor_ID"])
+                request_payload["Positive_Experience_Score"] =float(row["Positive_Experience_Score"])
+                request_payload["Predicted_Age"] = float(row["Predicted_Age"])
+                request_payload["Predicted_Gender"] = str(row["Predicted_Gender"])
+                request_payload["Last_Location"] = str(row["Last_Location"])
+                request_payload["Location_History"] = str(row["Location_History"])
+                request_payload["Timestamp"] = str(row["Timestamp"])
+                if request_payload not in uploaded_entries:
+                    db_entries.append(request_payload)
+
+            uploaded_entries += db_entries 
+
+                
+            headers = {
+            'Content-Type': 'application/json'
+            }
+            
+            print("Pushing to DB:", db_entries)
+            response = requests.request('POST', URL, headers = headers, data = json.dumps(db_entries, default=str), allow_redirects=False)
+            print(response.text)   
 
             if remote_upload:
                 # Dongle is reconnected after the model terminates with enough time to upload the .csv file

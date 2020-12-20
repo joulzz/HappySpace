@@ -10,7 +10,8 @@
 *.data-00000-of-00001
 
 *.mp4
-
+*_3dplot.png
+*_processed.csv
 aws_access_keys\.json
 
 images/
